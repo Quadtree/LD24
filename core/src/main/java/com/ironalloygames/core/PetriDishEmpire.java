@@ -13,7 +13,10 @@ import playn.core.Game;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.ImmediateLayer;
+import playn.core.Key;
 import playn.core.ImmediateLayer.Renderer;
+import playn.core.Keyboard.Event;
+import playn.core.Keyboard.TypedEvent;
 import playn.core.Mouse;
 import playn.core.Mouse.ButtonEvent;
 import playn.core.Mouse.Listener;
@@ -22,7 +25,7 @@ import playn.core.Mouse.WheelEvent;
 import playn.core.PlayN;
 import playn.core.Surface;
 
-public class PetriDishEmpire implements Game, Listener {
+public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener {
 	
 	public Camera cam;
 	public World world;
@@ -109,6 +112,7 @@ public class PetriDishEmpire implements Game, Listener {
 		crt.setMoveTarget(new Vec2(20,0));
 		
 		PlayN.mouse().setListener(this);
+		PlayN.keyboard().setListener(this);
 	}
 
 	@Override
@@ -207,6 +211,39 @@ public class PetriDishEmpire implements Game, Listener {
 
 	@Override
 	public void onMouseWheelScroll(WheelEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onKeyDown(Event event) {
+		if(event.key() == Key.B)
+		{
+			ArrayList<Genome> genomes = new ArrayList<Genome>();
+			
+			for(Creature c : creatures)
+			{
+				if(c.selected) genomes.add(c.genome);
+			}
+			
+			Genome genome = new Genome(genomes);
+			
+			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+			
+			Creature crt = new Creature(mousePos, genome, true);
+			
+			creatures.add(crt);
+		}
+	}
+
+	@Override
+	public void onKeyTyped(TypedEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onKeyUp(Event event) {
 		// TODO Auto-generated method stub
 		
 	}	

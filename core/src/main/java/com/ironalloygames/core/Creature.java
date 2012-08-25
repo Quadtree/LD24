@@ -139,6 +139,11 @@ public class Creature {
 			//System.out.println("Moving to " + delta);
 		}
 		
+		if(body.getAngularVelocity() < enginePower / body.getMass() * 1000)
+		{
+			body.applyTorque(enginePower);
+		}
+		
 		mouseHover = false;
 	}
 	

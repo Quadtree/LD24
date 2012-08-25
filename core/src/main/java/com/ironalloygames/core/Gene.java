@@ -26,6 +26,14 @@ public class Gene {
 		this.length = length;
 		this.angle = angle;
 		this.backtrack = backtrack;
+		
+		clamp();
+	}
+	
+	protected void clamp()
+	{
+		length = Math.max(length, 0.2f);
+		backtrack = Math.max(backtrack, 0);
 	}
 	
 	protected Gene(Gene g)
@@ -46,6 +54,8 @@ public class Gene {
 		ng.angle += PetriDishEmpire.s.rand.nextGaussian();
 		ng.backtrack += PetriDishEmpire.s.rand.nextGaussian() * 0.5f;
 		
+		ng.clamp();
+		
 		return ng;
 	}
 	
@@ -61,6 +71,7 @@ public class Gene {
 			case GT_ARMOR: p = new Armor(); break;
 			case GT_WEAKPOINT: p = new WeakPoint(); break;
 			case GT_WEAPON: p = new Weapon(); break;
+			default: p = new Structure(); break;
 		}
 		
 		
