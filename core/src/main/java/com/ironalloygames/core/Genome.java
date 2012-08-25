@@ -22,7 +22,7 @@ public class Genome {
 		
 		avgArms /= genomes.size();
 		
-		avgArms += PetriDishEmpire.s.rand.nextGaussian();
+		avgArms += PetriDishEmpire.s.rand.nextGaussian() * 0.15f;
 		
 		arms = Math.round(avgArms);
 		
@@ -33,7 +33,7 @@ public class Genome {
 		
 		avgGenes /= genomes.size();
 		
-		avgGenes += PetriDishEmpire.s.rand.nextGaussian();
+		avgGenes += PetriDishEmpire.s.rand.nextGaussian() * 0.3f;
 		
 		int genes = Math.round(avgGenes);
 		
@@ -44,7 +44,7 @@ public class Genome {
 			
 			for(int j=0;j<genomes.size();++j)
 			{
-				if(genomes.get(j).genes.size() > i && PetriDishEmpire.s.rand.nextInt(n++) == 1)
+				if(genomes.get(j).genes.size() > i && PetriDishEmpire.s.rand.nextInt(n++) == 0)
 				{
 					g = genomes.get(j).genes.get(i).mutate();
 				}

@@ -15,6 +15,8 @@ public class Gene {
 	public static final int GT_WEAKPOINT = 4;
 	public static final int GT_WEAPON = 5;
 	
+	public static final float MUTATION_MUL = 0.25f;
+	
 	float geneType;
 	float length;
 	float angle;
@@ -49,10 +51,10 @@ public class Gene {
 	{
 		Gene ng = new Gene(this);
 		
-		ng.geneType += PetriDishEmpire.s.rand.nextGaussian() * 0.35f;
-		ng.length += PetriDishEmpire.s.rand.nextGaussian() * 0.3f;
-		ng.angle += PetriDishEmpire.s.rand.nextGaussian();
-		ng.backtrack += PetriDishEmpire.s.rand.nextGaussian() * 0.5f;
+		ng.geneType += PetriDishEmpire.s.rand.nextGaussian() * 0.35f * MUTATION_MUL;
+		ng.length += PetriDishEmpire.s.rand.nextGaussian() * 0.3f * MUTATION_MUL;
+		ng.angle += PetriDishEmpire.s.rand.nextGaussian() * MUTATION_MUL;
+		ng.backtrack += PetriDishEmpire.s.rand.nextGaussian() * 0.5f * MUTATION_MUL;
 		
 		ng.clamp();
 		
