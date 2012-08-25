@@ -55,6 +55,6 @@ public class Piece {
 		
 		cam.drawLine(startAbs, endAbs, getColor());
 		
-		System.out.println(startAbs + " " + endAbs);
+		
 	}
 }

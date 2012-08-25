@@ -36,6 +36,8 @@ public class PetriDishEmpire implements Game {
 
 			@Override
 			public void render(Surface surface) {
+				cam.setCamera(new Vec2(0,0), 5);
+				
 				surface.clear();
 				cam.surf = surface;
 				
@@ -60,7 +62,7 @@ public class PetriDishEmpire implements Game {
 		
 		Genome genome = new Genome(genes, 4);
 		
-		Creature crt = new Creature(new Vec2(100,100), genome);
+		Creature crt = new Creature(new Vec2(0,0), genome);
 		
 		creatures.add(crt);
 	}
