@@ -79,6 +79,8 @@ public class PetriDishEmpire implements Game {
 		
 		creatures.add(crt);
 		creatures.add(crt2);
+		
+		crt.setMoveTarget(new Vec2(20,0));
 	}
 
 	@Override
@@ -87,6 +89,10 @@ public class PetriDishEmpire implements Game {
 
 	@Override
 	public void update(float delta) {
+		
+		for(Creature c : creatures)
+			c.update();
+		
 		world.step(delta, 4, 4);
 	}
 

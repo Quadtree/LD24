@@ -68,10 +68,13 @@ public class Piece {
 		fd.userData = this;
 		
 		PolygonShape ps = new PolygonShape();
-		ps.setAsBox(getLength(), 0.05f, (start.add(end)).mul(0.5f), getAngle());
+		ps.setAsBox(getLength(), 0.2f, (start.add(end)).mul(0.5f), getAngle());
 		
 		fd.shape = ps;
 		
 		return fd;
 	}
+	
+	public float getSolarPower(){ return 0; }
+	public float getEnginePower(){ return 0; }
 }
