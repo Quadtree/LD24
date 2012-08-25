@@ -1,10 +1,16 @@
 package com.ironalloygames.core.piece;
 
+import org.jbox2d.common.Transform;
+import org.jbox2d.common.Vec2;
+
+import com.ironalloygames.core.PetriDishEmpire;
+import com.ironalloygames.core.Spark;
+
 import playn.core.Color;
 
 public class Weapon extends Piece {
 	private static final int CHARGE_TIME = 60;
-	private static final float DAMAGE_MOD = 3.f;
+	private static final float DAMAGE_MOD = 1.f;
 
 	protected int getColor(){ return Color.rgb(255, 0, 0); }
 	
@@ -19,6 +25,23 @@ public class Weapon extends Piece {
 			if(owner.playerOwned == false || p.owner.playerOwned == false)
 			{
 				p.takeDamage(damage);
+				
+				
+				Transform t = new Transform();
+				t.set(p.owner.body.getPosition(), p.owner.body.getAngle());
+				
+				Vec2 startAbs = Transform.mul(t, p.start);
+				Vec2 endAbs = Transform.mul(t, p.end);
+				
+				for(int i=0;i<damage*5;++i)
+				{
+					float pt = PetriDishEmpire.s.rand.nextFloat();
+					
+					Vec2 centerPoint = startAbs.mul(pt).add(endAbs.mul(1 - pt));
+					
+					PetriDishEmpire.s.entityAddQueue.add(new Spark(centerPoint, Color.rgb(255, 0, 0)));
+				}
+				
 				damage = 0;
 				break;
 			}

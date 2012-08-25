@@ -3,6 +3,7 @@ package com.ironalloygames.core;
 import static playn.core.PlayN.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.jbox2d.callbacks.ContactImpulse;
@@ -39,7 +40,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public World world;
 	public Random rand;
 	
-	public ArrayList<Creature> creatures = new ArrayList<Creature>();
+	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	
 	public static PetriDishEmpire s;
 	
@@ -53,6 +54,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	boolean shiftKeyDown = false;
 	
 	final static float BAND_SELECT_THRESH = 2;
+	
+	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	@Override
 	public void init() {
@@ -69,9 +72,9 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				surface.clear();
 				cam.surf = surface;
 				
-				for(Creature c : creatures)
+				for(Entity c : entities)
 				{
-					c.render(cam);
+					c.render();
 				}
 				
 				if(mouseDownRealPos != null)
@@ -98,12 +101,22 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		rand = new Random();
 		
-		creatures.add(new Creature(new Vec2(10,10), new Genome(), false));
+		entities.add(new Creature(new Vec2(10,10), new Genome(), false));
 		
 		PlayN.mouse().setListener(this);
 		PlayN.keyboard().setListener(this);
 		
 		world.setContactListener(this);
+	}
+	
+	public List<Creature> getCreatures()
+	{
+		ArrayList<Creature> ret = new ArrayList<Creature>();
+		
+		for(Entity e : entities)
+			if(e instanceof Creature) ret.add((Creature)e);
+		
+		return ret;
 	}
 
 	@Override
@@ -115,12 +128,18 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 		
-		for(Creature c : creatures)
+		for(Entity e : entities)
 		{
-			c.update();
-			
-			if(c.isInBoundingBox(mousePos) && c.playerOwned) c.mouseHover = true;
+			e.update();
+			if(e instanceof Creature)
+			{
+				Creature c = (Creature)e;
+				if(c.isInBoundingBox(mousePos) && c.playerOwned) c.mouseHover = true;
+			}
 		}
+		
+		entities.addAll(entityAddQueue);
+		entityAddQueue.clear();
 		
 		world.step(delta, 12, 12);
 		
@@ -153,7 +172,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		}
 		if(event.button() == Mouse.BUTTON_RIGHT)
 		{
-			for(Creature c : creatures)
+			for(Creature c : getCreatures())
 			{
 				if(c.selected) c.setMoveTarget(mousePos);
 			}
@@ -170,7 +189,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			if(!shiftKeyDown)
 			{
-				for(Creature c : creatures)
+				for(Creature c : getCreatures())
 				{
 					c.selected = false;
 				}
@@ -178,7 +197,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
 			{
-				for(Creature c : creatures)
+				for(Creature c : getCreatures())
 				{
 					if(c.isInBoundingBox(mousePos) && c.playerOwned) c.selected = true;
 				}
@@ -186,7 +205,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				Vec2 ul = new Vec2(Math.min(mousePos.x, mouseDownRealPos.x), Math.min(mousePos.y, mouseDownRealPos.y));
 				Vec2 lr = new Vec2(Math.max(mousePos.x, mouseDownRealPos.x), Math.max(mousePos.y, mouseDownRealPos.y));
 				
-				for(Creature c : creatures)
+				for(Creature c : getCreatures())
 				{
 					if(c.playerOwned)
 					{
@@ -224,7 +243,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		{
 			ArrayList<Genome> genomes = new ArrayList<Genome>();
 			
-			for(Creature c : creatures)
+			for(Creature c : getCreatures())
 			{
 				if(c.selected) genomes.add(c.genome);
 			}
@@ -237,7 +256,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			Creature crt = new Creature(mousePos, genome, true);
 			
-			creatures.add(crt);
+			entities.add(crt);
 		}
 		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
@@ -264,7 +283,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			((Piece)contact.m_fixtureA.m_userData).contactList.add(((Piece)contact.m_fixtureB.m_userData));
 			((Piece)contact.m_fixtureB.m_userData).contactList.add(((Piece)contact.m_fixtureA.m_userData));
 			
-			System.out.println("CONTACT!");
+			//System.out.println("CONTACT!");
 		}
 	}
 

@@ -95,7 +95,7 @@ public class Piece {
 	
 	public float takeDamage(float amount)
 	{
-		System.out.println(amount + " damage taken!");
+		//System.out.println(amount + " damage taken!");
 		
 		float food = 0;
 		

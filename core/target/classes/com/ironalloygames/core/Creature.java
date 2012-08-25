@@ -15,8 +15,8 @@ import playn.core.Color;
 
 import com.ironalloygames.core.piece.*;
 
-public class Creature {
-	public Body body;
+public class Creature extends Entity{
+	
 	Genome genome;
 	public boolean playerOwned;
 	
@@ -38,15 +38,10 @@ public class Creature {
 	
 	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
+		super(pos);
+		
 		this.playerOwned = playerOwned;
 		//selected = playerOwned;
-		
-		BodyDef bd = new BodyDef();
-		bd.position = pos;
-		bd.type = BodyType.DYNAMIC;
-		bd.bullet = false;
-		
-		body = PetriDishEmpire.s.world.createBody(bd);
 		
 		this.genome = genome;
 		
@@ -79,8 +74,10 @@ public class Creature {
 		this.moveTarget = new Vec2(moveTarget);
 	}
 	
-	public void render(Camera cam)
+	public void render()
 	{
+		Camera cam = PetriDishEmpire.s.cam;
+		
 		for(Piece p : pieces)
 		{
 			p.render(cam, this);
