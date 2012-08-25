@@ -141,11 +141,7 @@ public class Creature extends Entity{
 	
 	public void update()
 	{
-		if(woken && PetriDishEmpire.s.rand.nextInt(10000) == 0)
-		{
-			woken = false;
-			body.setActive(false);
-		}
+		woken = false;
 		
 		if(!woken)
 		{
@@ -153,15 +149,16 @@ public class Creature extends Entity{
 			{
 				if(e instanceof Creature && ((Creature) e).playerOwned)
 				{
-					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 100 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 100)
+					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 50 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 50)
 					{
 						woken = true;
-						body.setActive(true);
 						break;
 					}
 				}
 			}
 		}
+		
+		body.setActive(woken);
 		
 		if(woken)
 		{

@@ -244,7 +244,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		for(int i=0;i<entities.size();++i)
 		{
-			if(!entities.get(i).keep()) entities.remove(i--);
+			if(!entities.get(i).keep())
+			{
+				entities.get(i).destroyed();
+				entities.remove(i--);
+			}
 		}
 		
 		entities.addAll(entityAddQueue);

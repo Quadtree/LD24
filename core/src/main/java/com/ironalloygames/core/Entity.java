@@ -21,5 +21,9 @@ public class Entity {
 	public void update(){}
 	public void render(){}
 	public boolean keep(){ return true; }
-	public void destroyed(){}
+	
+	public void destroyed()
+	{
+		PetriDishEmpire.s.world.destroyBody(body);
+	}
 }
