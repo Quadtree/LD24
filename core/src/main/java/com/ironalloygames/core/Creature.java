@@ -9,6 +9,7 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
+import org.jbox2d.dynamics.Fixture;
 
 import playn.core.Color;
 
@@ -62,7 +63,10 @@ public class Creature {
 		}
 		
 		for(Piece p : pieces)
-			body.createFixture(p.getFixtureDef());
+		{
+			Fixture f = body.createFixture(p.getFixtureDef());
+			p.fixture = f;
+		}
 		
 		moveTarget = new Vec2(pos);
 		
@@ -145,6 +149,9 @@ public class Creature {
 		}
 		
 		mouseHover = false;
+		
+		for(Piece p : pieces)
+			p.update();
 	}
 	
 	void renderBoundingBox(int color)

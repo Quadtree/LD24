@@ -2,6 +2,7 @@ package com.ironalloygames.core.piece;
 
 import java.util.ArrayList;
 
+import org.jbox2d.collision.shapes.MassData;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Transform;
@@ -17,8 +18,10 @@ import playn.core.Color;
 public class Piece {
 	Vec2 start;
 	Vec2 end;
-	Fixture fixture;
+	public Fixture fixture;
 	public Creature owner;
+	
+	public float width;
 	
 	public float hp;
 	
@@ -58,6 +61,13 @@ public class Piece {
 		this.end = new Vec2(end);
 	}
 	
+	public float getMass()
+	{
+		MassData md = new MassData();
+		fixture.getMassData(md);
+		return md.mass;
+	}
+	
 	public void render(Camera cam, Creature crt)
 	{
 		Transform t = new Transform();
@@ -66,7 +76,7 @@ public class Piece {
 		Vec2 startAbs = Transform.mul(t, start);
 		Vec2 endAbs = Transform.mul(t, end);
 		
-		cam.drawLine(startAbs, endAbs, getColor());
+		cam.drawLine(startAbs, endAbs, getColor(), width);
 	}
 	
 	public FixtureDef getFixtureDef()
@@ -76,7 +86,7 @@ public class Piece {
 		fd.userData = this;
 		
 		PolygonShape ps = new PolygonShape();
-		ps.setAsBox((getLength() / 2 + 0.5f), 0.2f, (start.add(end)).mul(0.5f), getAngle());
+		ps.setAsBox((getLength() / 2 + 0.2f), 0.1f+(width/2), (start.add(end)).mul(0.5f), getAngle());
 		
 		fd.shape = ps;
 		
@@ -85,6 +95,8 @@ public class Piece {
 	
 	public float takeDamage(float amount)
 	{
+		System.out.println(amount + " damage taken!");
+		
 		float food = 0;
 		
 		hp -= amount;
@@ -101,6 +113,8 @@ public class Piece {
 		
 		return food;
 	}
+	
+	public void update(){}
 	
 	public float getSolarPower(){ return 0; }
 	public float getEnginePower(){ return 0; }

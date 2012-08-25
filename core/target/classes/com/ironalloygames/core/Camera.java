@@ -65,11 +65,16 @@ public class Camera {
 	
 	public void drawLine(Vec2 start, Vec2 end, int color)
 	{
+		drawLine(start,end,color,1 / zoom / PlayN.graphics().height());
+	}
+	
+	public void drawLine(Vec2 start, Vec2 end, int color, float width)
+	{
 		Vec2 screenStart = realToScreen(start);
 		Vec2 screenEnd = realToScreen(end);
 		
 		surf.setFillColor(color);
-		surf.drawLine(screenStart.x, screenStart.y, screenEnd.x, screenEnd.y, 1);
+		surf.drawLine(screenStart.x, screenStart.y, screenEnd.x, screenEnd.y, width*zoom*PlayN.graphics().height());
 	}
 	
 	public void drawImage(Vec2 pos, String imageName)

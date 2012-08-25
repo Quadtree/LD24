@@ -19,6 +19,7 @@ public class Gene {
 	
 	float geneType;
 	float length;
+	float width;
 	float angle;
 	float backtrack;
 	
@@ -26,6 +27,7 @@ public class Gene {
 	{
 		geneType = PetriDishEmpire.s.rand.nextInt(6);
 		length = (float)PetriDishEmpire.s.rand.nextGaussian() * 2.f + 4.f;
+		width = (float)PetriDishEmpire.s.rand.nextGaussian() * 0.2f + 0.5f;
 		angle = (float)PetriDishEmpire.s.rand.nextGaussian() * 0.5f;
 		backtrack = (float)PetriDishEmpire.s.rand.nextGaussian() * 2;
 		
@@ -46,6 +48,7 @@ public class Gene {
 	{
 		length = Math.max(length, 0.2f);
 		backtrack = Math.max(backtrack, 0);
+		width = Math.max(width, 0.2f);
 	}
 	
 	protected Gene(Gene g)
@@ -121,6 +124,8 @@ public class Gene {
 		{
 			parent.childPieces.add(p);
 		}
+		
+		p.width = width;
 		
 		p.hp = p.getLength() * p.getHPMod();
 	}

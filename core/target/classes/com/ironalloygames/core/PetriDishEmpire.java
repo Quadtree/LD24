@@ -266,6 +266,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		{
 			((Piece)contact.m_fixtureA.m_userData).contactList.add(((Piece)contact.m_fixtureB.m_userData));
 			((Piece)contact.m_fixtureB.m_userData).contactList.add(((Piece)contact.m_fixtureA.m_userData));
+			
+			System.out.println("CONTACT!");
 		}
 	}
 
