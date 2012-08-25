@@ -24,9 +24,12 @@ public class Weapon extends Piece {
 		{
 			if(owner.playerOwned == false || p.owner.playerOwned == false)
 			{
-				p.takeDamage(damage);
+				float food = p.takeDamage(damage) / 3;
 				
-				
+				if(owner.playerOwned)
+					PetriDishEmpire.s.playerMoney += food;
+				else
+					PetriDishEmpire.s.enemyMoney += food;
 				
 				damage = 0;
 				break;

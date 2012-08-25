@@ -64,7 +64,10 @@ public class Creature extends Entity{
 			p.fixture = f;
 			p.hp = p.getMass();
 			
-			if(playerOwned) PetriDishEmpire.s.playerMoney -= p.getCostMod() * p.getMass();
+			if(playerOwned)
+				PetriDishEmpire.s.playerMoney -= p.getCostMod() * p.getMass();
+			else
+				PetriDishEmpire.s.enemyMoney -= p.getCostMod() * p.getMass();
 		}
 		
 		moveTarget = new Vec2(pos);
@@ -80,6 +83,15 @@ public class Creature extends Entity{
 	public void render()
 	{
 		Camera cam = PetriDishEmpire.s.cam;
+		
+		if((body.getPosition().x < cam.upperLeftBound.x - radius &&
+		   body.getPosition().y < cam.upperLeftBound.y - radius)
+		   ||
+		   (body.getPosition().x > cam.lowerRightBound.x - radius &&
+		    body.getPosition().y > cam.lowerRightBound.y - radius))
+		{
+			return;
+		}
 		
 		for(Piece p : pieces)
 		{
@@ -134,20 +146,9 @@ public class Creature extends Entity{
 			delta.mulLocal(enginePower);
 			
 			body.applyForce(delta, body.getPosition());
-			
-			/*MassData md = new MassData();
-			
-			body.getMassData(md);
-			
-			body.applyForce(delta, md.center);*/
-			
-			//System.out.println("Moving to " + delta);
 		}
 		
-		//if(body.getAngularVelocity() < enginePower / body.getMass() * 1000)
-		//{
-			body.applyTorque(enginePower);
-		//}
+		body.applyTorque(enginePower);
 		
 		mouseHover = false;
 		

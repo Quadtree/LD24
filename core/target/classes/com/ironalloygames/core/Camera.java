@@ -16,10 +16,18 @@ public class Camera {
 	
 	HashMap<String, Image> images = new HashMap<String, Image>();
 	
+	public Vec2 upperLeftBound = new Vec2();
+	public Vec2 lowerRightBound = new Vec2();
+	
 	public void setCamera(Vec2 position, float zoom)
 	{
 		this.position = new Vec2(position);
 		this.zoom = zoom / PlayN.graphics().height();
+		
+		Vec2 offset = new Vec2(PlayN.graphics().width() / zoom, PlayN.graphics().height() / zoom);
+		
+		upperLeftBound = position.sub(offset);
+		lowerRightBound = position.add(offset);
 	}
 	
 	public Vec2 realToScreen(Vec2 input)

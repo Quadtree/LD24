@@ -12,7 +12,9 @@ public class Genome {
 		//while(PetriDishEmpire.s.rand.nextInt(5) != 0) genes.add(new Gene());
 		
 		int genes = (int)(PetriDishEmpire.s.rand.nextGaussian() * 3 + 5);
-		 
+		
+		genes = Math.max(genes, 1);
+		
 		for(int i=0;i<genes;++i) this.genes.add(new Gene());
 	
 		arms = Math.max((int)Math.round(PetriDishEmpire.s.rand.nextGaussian()*3 + 3), 2);

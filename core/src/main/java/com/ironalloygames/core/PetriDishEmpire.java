@@ -61,11 +61,14 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
-	public float playerMoney = 50;
+	public float playerMoney = 700;
+	public float enemyMoney = 10000;
 	
 	public CanvasImage statsDisplay;
 	
 	Font drawFont;
+	
+	int lastFrameFPS = 0;
 	
 	@Override
 	public void init() {
@@ -73,7 +76,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		cam = new Camera();
 		
-		statsDisplay = graphics().createImage(256, 256);
+		statsDisplay = graphics().createImage(160, 160);
 		
 		ImmediateLayer il = graphics().createImmediateLayer(new Renderer(){
 
@@ -103,27 +106,25 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					}
 				}
 				
-				statsDisplay.canvas().clear();
-				statsDisplay.canvas().setStrokeColor(Color.rgb(255, 255, 255));
+				fps++;
 				
-				TextFormat tf = new TextFormat();
-				tf.font = new Font();
-				
-				TextLayout tl = new TextLayout();
-				
-				statsDisplay.canvas().strokeText(tl, 30.f, 30.f);
-				
-				surface.drawImage(statsDisplay, 0, 0);
+				if(System.currentTimeMillis() / 1000 != lastSecond)
+				{
+					lastSecond = System.currentTimeMillis() / 1000;
+					lastFrameFPS = fps;
+					fps = 0;
+				}
 			}
 		});
 	  
 		graphics().rootLayer().add(il);
+		graphics().rootLayer().add(graphics().createImageLayer(statsDisplay));
 		
 		world = new World(new Vec2(0,0), true);
 		
 		rand = new Random();
 		
-		entities.add(new Creature(new Vec2(10,10), new Genome(), false));
+		
 		
 		PlayN.mouse().setListener(this);
 		PlayN.keyboard().setListener(this);
@@ -144,11 +145,17 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	@Override
 	public void paint(float alpha) {
 	}
+	
+	int enemiesOnField = 0;
+	int alliesOnField = 0;
 
 	@Override
 	public void update(float delta) {
 		
 		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+		
+		enemiesOnField = 0;
+		alliesOnField = 0;
 		
 		for(Entity e : entities)
 		{
@@ -157,6 +164,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			{
 				Creature c = (Creature)e;
 				if(c.isInBoundingBox(mousePos) && c.playerOwned) c.mouseHover = true;
+				
+				if(!c.playerOwned)
+					enemiesOnField++;
+				else
+					alliesOnField++;
 			}
 		}
 		
@@ -168,18 +180,35 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		entities.addAll(entityAddQueue);
 		entityAddQueue.clear();
 		
-		world.step(delta, 12, 12);
+		world.step(delta, 3, 3);
 		
-		fps++;
-		
-		if(System.currentTimeMillis() / 1000 != lastSecond)
+		if(enemyMoney > 0)
 		{
-			lastSecond = System.currentTimeMillis() / 1000;
-			System.out.println("FPS: " + fps);
-			fps = 0;
+			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * 2000,(rand.nextFloat() - 0.5f) * 2000), new Genome(), false));
 		}
 		
 		
+		//if(rand.nextInt(4) == 0)
+		//{
+			statsDisplay.canvas().clear();
+			statsDisplay.canvas().setFillColor(Color.rgb(0, 255, 0));
+			statsDisplay.canvas().drawText("Food: " + playerMoney, 20, 20);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(200, 200, 200));
+			statsDisplay.canvas().drawText("Population:", 20, 40);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(100, 100, 255));
+			statsDisplay.canvas().drawText("" + alliesOnField, 100, 40);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
+			statsDisplay.canvas().drawText("" + enemiesOnField, 130, 40);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
+			statsDisplay.canvas().drawText("Enemy Food: " + enemyMoney, 20, 120);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
+			statsDisplay.canvas().drawText("FPS: " + lastFrameFPS, 20, 140);
+		//}
 	}
 
 	@Override
