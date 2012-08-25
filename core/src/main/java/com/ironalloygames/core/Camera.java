@@ -35,8 +35,6 @@ public class Camera {
 	public void translateCamera(Vec2 delta, float zoom)
 	{
 		setCamera(position.add(delta), zoom);
-		
-		System.out.println(position);
 	}
 	
 	public Vec2 realToScreen(Vec2 input)

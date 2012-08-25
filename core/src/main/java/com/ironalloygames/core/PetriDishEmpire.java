@@ -43,6 +43,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	private static final float DISH_HALFSIZE = 900;
 	private static final float MINIMAP_SIZE = 160;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
+	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
 	
 	public Camera cam;
 	public World world;
@@ -80,6 +81,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	boolean camMoveDown = false;
 	
 	Vec2 camMoveRate = new Vec2();
+	
+	Vec2 mouseScrollStart = null;
 	
 	@Override
 	public void init() {
@@ -268,9 +271,20 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		float INTERPOLATION = 0.9f;
 		
+		// if the center mouse button is down
+		if(mouseScrollStart != null)
+		{
+			Vec2 mouseScrollDelta = mouseScrollStart.sub(mouseScreenPos);
+			mouseScrollDelta.x = -mouseScrollDelta.x;
+			mouseScrollDelta.mulLocal(MOUSE_CAMERA_MOVE_SPEED);
+			desiredCamMove.addLocal(mouseScrollDelta);
+		}
+		
 		camMoveRate = (camMoveRate.mul(INTERPOLATION)).add(desiredCamMove.mul(1 - INTERPOLATION));
 		
 		cam.translateCamera(camMoveRate, 5);
+		
+		
 	}
 
 	@Override
@@ -296,6 +310,10 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			{
 				if(c.selected) c.setMoveTarget(mousePos);
 			}
+		}
+		if(event.button() == Mouse.BUTTON_MIDDLE)
+		{
+			mouseScrollStart = new Vec2(mouseScreenPos);
 		}
 	}
 
@@ -343,6 +361,10 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			}
 			
 			mouseDownRealPos = null;
+		}
+		if(event.button() == Mouse.BUTTON_MIDDLE)
+		{
+			mouseScrollStart = null;
 		}
 	}
 
