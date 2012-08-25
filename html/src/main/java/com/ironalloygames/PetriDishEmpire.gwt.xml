@@ -1,0 +1,10 @@
+<module rename-to='pde'>
+  <inherits name='playn.PlayN'/>
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.ironalloygames.html.PetriDishEmpireHtml'/>
+</module>
