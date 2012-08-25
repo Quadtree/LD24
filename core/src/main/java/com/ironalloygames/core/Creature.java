@@ -39,7 +39,8 @@ public class Creature {
 			pieces.addAll(arm);
 		}
 		
-		System.out.println(pieces);
+		for(Piece p : pieces)
+			body.createFixture(p.getFixtureDef());
 	}
 	
 	public void render(Camera cam)

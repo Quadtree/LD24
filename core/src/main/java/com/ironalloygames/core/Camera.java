@@ -36,8 +36,6 @@ public class Camera {
 		
 		// we are now in pixel coordinates
 		
-		//System.out.println(input + " -> " + t);
-		
 		return t;
 	}
 	
@@ -45,8 +43,6 @@ public class Camera {
 	{
 		Vec2 screenStart = realToScreen(start);
 		Vec2 screenEnd = realToScreen(end);
-		
-		
 		
 		surf.setFillColor(color);
 		surf.drawLine(screenStart.x, screenStart.y, screenEnd.x, screenEnd.y, 1);

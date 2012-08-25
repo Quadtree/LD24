@@ -1,8 +1,11 @@
 package com.ironalloygames.core.piece;
 
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Fixture;
+import org.jbox2d.dynamics.FixtureDef;
 
 import com.ironalloygames.core.Camera;
 import com.ironalloygames.core.Creature;
@@ -12,6 +15,7 @@ import playn.core.Color;
 public class Piece {
 	Vec2 start;
 	Vec2 end;
+	Fixture fixture;
 	
 	protected int getColor(){ return Color.rgb(255, 255, 255); }
 	
@@ -54,7 +58,19 @@ public class Piece {
 		Vec2 endAbs = Transform.mul(t, end);
 		
 		cam.drawLine(startAbs, endAbs, getColor());
+	}
+	
+	public FixtureDef getFixtureDef()
+	{
+		FixtureDef fd = new FixtureDef();
+		fd.density = 1;
+		fd.userData = this;
 		
+		PolygonShape ps = new PolygonShape();
+		ps.setAsBox(getLength(), 0.2f, (start.add(end)).mul(0.5f), getAngle());
 		
+		fd.shape = ps;
+		
+		return fd;
 	}
 }

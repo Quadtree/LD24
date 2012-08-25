@@ -26,6 +26,8 @@ public class PetriDishEmpire implements Game {
 	
 	public static PetriDishEmpire s;
 	
+	Creature crt;
+	
 	@Override
 	public void init() {
 		s = this;
@@ -62,9 +64,11 @@ public class PetriDishEmpire implements Game {
 		
 		Genome genome = new Genome(genes, 4);
 		
-		Creature crt = new Creature(new Vec2(0,0), genome);
+		crt = new Creature(new Vec2(0,0), genome);
+		Creature crt2 = new Creature(new Vec2(8,0), genome);
 		
 		creatures.add(crt);
+		creatures.add(crt2);
 	}
 
 	@Override
@@ -74,6 +78,8 @@ public class PetriDishEmpire implements Game {
 	@Override
 	public void update(float delta) {
 		world.step(delta, 4, 4);
+		
+		crt.body.setAngularVelocity(0.001f);
 	}
 
 	@Override
