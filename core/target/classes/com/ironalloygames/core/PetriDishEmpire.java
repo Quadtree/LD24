@@ -14,6 +14,7 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.ImmediateLayer;
 import playn.core.ImmediateLayer.Renderer;
+import playn.core.Mouse;
 import playn.core.Mouse.ButtonEvent;
 import playn.core.Mouse.Listener;
 import playn.core.Mouse.MotionEvent;
@@ -36,6 +37,10 @@ public class PetriDishEmpire implements Game, Listener {
 	
 	Vec2 mouseScreenPos = new Vec2();
 	
+	Vec2 mouseDownRealPos = null;
+	
+	final static float BAND_SELECT_THRESH = 2;
+	
 	@Override
 	public void init() {
 		s = this;
@@ -54,6 +59,20 @@ public class PetriDishEmpire implements Game, Listener {
 				for(Creature c : creatures)
 				{
 					c.render(cam);
+				}
+				
+				if(mouseDownRealPos != null)
+				{
+					Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+					
+					if(mousePos.sub(mouseDownRealPos).length() >= BAND_SELECT_THRESH)
+					{
+						cam.drawLine(mousePos, new Vec2(mousePos.x, mouseDownRealPos.y), 0xFFFFFFFF);
+						cam.drawLine(mousePos, new Vec2(mouseDownRealPos.x, mousePos.y), 0xFFFFFFFF);
+						
+						cam.drawLine(mouseDownRealPos, new Vec2(mousePos.x, mouseDownRealPos.y), 0xFFFFFFFF);
+						cam.drawLine(mouseDownRealPos, new Vec2(mouseDownRealPos.x, mousePos.y), 0xFFFFFFFF);
+					}
 				}
 				
 				fps++;
@@ -118,25 +137,56 @@ public class PetriDishEmpire implements Game, Listener {
 
 	@Override
 	public void onMouseDown(ButtonEvent event) {
-		mouseScreenPos = new Vec2(event.x(), event.y());
-		
-		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
-		
-		for(Creature c : creatures)
+		if(event.button() == Mouse.BUTTON_LEFT)
 		{
-			c.selected = false;
-		}
-		
-		for(Creature c : creatures)
-		{
-			if(c.isInBoundingBox(mousePos) && c.playerOwned) c.selected = true;
+			mouseScreenPos = new Vec2(event.x(), event.y());
+			
+			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+			
+			mouseDownRealPos = new Vec2(mousePos);
 		}
 	}
 
 	@Override
 	public void onMouseUp(ButtonEvent event) {
-		// TODO Auto-generated method stub
-		
+		if(event.button() == Mouse.BUTTON_LEFT)
+		{
+			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+			
+			for(Creature c : creatures)
+			{
+				c.selected = false;
+			}
+			
+			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
+			{
+				for(Creature c : creatures)
+				{
+					if(c.isInBoundingBox(mousePos) && c.playerOwned) c.selected = true;
+				}
+			} else {
+				Vec2 ul = new Vec2(Math.min(mousePos.x, mouseDownRealPos.x), Math.min(mousePos.y, mouseDownRealPos.y));
+				Vec2 lr = new Vec2(Math.max(mousePos.x, mouseDownRealPos.x), Math.max(mousePos.y, mouseDownRealPos.y));
+				
+				for(Creature c : creatures)
+				{
+					if(c.playerOwned)
+					{
+						if(c.body.getPosition().x >= ul.x &&
+						   c.body.getPosition().y >= ul.y &&
+						   c.body.getPosition().x <= lr.x &&
+						   c.body.getPosition().y <= lr.y)
+						{
+							c.selected = true;
+						}
+					}
+				}
+				
+				
+			}
+			
+			mouseDownRealPos = null;
+		}
 	}
 
 	@Override
