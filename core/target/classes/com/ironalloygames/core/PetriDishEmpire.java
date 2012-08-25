@@ -62,7 +62,7 @@ public class PetriDishEmpire implements Game {
 	  
 		graphics().rootLayer().add(il);
 		
-		world = new World(new Vec2(0,0), false);
+		world = new World(new Vec2(0,0), true);
 		
 		rand = new Random();
 		
@@ -93,7 +93,7 @@ public class PetriDishEmpire implements Game {
 		for(Creature c : creatures)
 			c.update();
 		
-		world.step(delta, 4, 4);
+		world.step(delta, 8, 8);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ public class Creature {
 		BodyDef bd = new BodyDef();
 		bd.position = pos;
 		bd.type = BodyType.DYNAMIC;
+		bd.bullet = false;
 		
 		body = PetriDishEmpire.s.world.createBody(bd);
 		

@@ -7,6 +7,6 @@ public class Engine extends Piece {
 
 	@Override
 	public float getEnginePower() {
-		return 0.0002f * getLength();
+		return 0.0001f * getLength();
 	}
 }
