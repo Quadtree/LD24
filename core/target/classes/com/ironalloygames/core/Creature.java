@@ -17,6 +17,7 @@ import com.ironalloygames.core.piece.*;
 
 public class Creature extends Entity{
 	
+	private static final float DAMPENING = 0.9f;
 	Genome genome;
 	public boolean playerOwned;
 	
@@ -141,10 +142,10 @@ public class Creature extends Entity{
 			//System.out.println("Moving to " + delta);
 		}
 		
-		if(body.getAngularVelocity() < enginePower / body.getMass() * 1000)
-		{
+		//if(body.getAngularVelocity() < enginePower / body.getMass() * 1000)
+		//{
 			body.applyTorque(enginePower);
-		}
+		//}
 		
 		mouseHover = false;
 		
@@ -160,6 +161,9 @@ public class Creature extends Entity{
 				this.recalculateStats();
 			}
 		}
+		
+		body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
+		body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
 	}
 	
 	void renderBoundingBox(int color)
@@ -171,6 +175,11 @@ public class Creature extends Entity{
 	{
 		return Math.abs(pos.x - body.getPosition().x) < radius*BOUNDING_BOX_MUL &&
 			   Math.abs(pos.y - body.getPosition().y) < radius*BOUNDING_BOX_MUL;
+	}
+
+	@Override
+	public boolean keep() {
+		return pieces.size() > 0;
 	}
 }
 

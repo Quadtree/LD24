@@ -12,6 +12,8 @@ import org.jbox2d.dynamics.FixtureDef;
 
 import com.ironalloygames.core.Camera;
 import com.ironalloygames.core.Creature;
+import com.ironalloygames.core.PetriDishEmpire;
+import com.ironalloygames.core.Spark;
 
 import playn.core.Color;
 
@@ -63,9 +65,29 @@ public class Piece {
 	
 	public float getMass()
 	{
+		if(fixture == null) return 0;
+		
 		MassData md = new MassData();
 		fixture.getMassData(md);
 		return md.mass;
+	}
+	
+	public void emitSparks(int count, int color)
+	{
+		Transform t = new Transform();
+		t.set(owner.body.getPosition(), owner.body.getAngle());
+		
+		Vec2 startAbs = Transform.mul(t, start);
+		Vec2 endAbs = Transform.mul(t, end);
+		
+		for(int i=0;i<count*5;++i)
+		{
+			float pt = PetriDishEmpire.s.rand.nextFloat();
+			
+			Vec2 centerPoint = startAbs.mul(pt).add(endAbs.mul(1 - pt));
+			
+			PetriDishEmpire.s.entityAddQueue.add(new Spark(centerPoint, color));
+		}
 	}
 	
 	public void render(Camera cam, Creature crt)
@@ -97,18 +119,24 @@ public class Piece {
 	{
 		//System.out.println(amount + " damage taken!");
 		
+		if(hp <= 0) return 0;
+		
 		float food = 0;
 		
 		hp -= amount;
 		
 		if(hp <= 0)
 		{
+			emitSparks((int)(getMass()*0.2f), getColor());
+			
 			food += getLength() * 10;
 			
 			for(Piece p : childPieces)
 			{
 				food += p.takeDamage(100000);
 			}
+			
+			childPieces.clear();
 		}
 		
 		return food;

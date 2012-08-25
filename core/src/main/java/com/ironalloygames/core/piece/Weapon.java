@@ -26,21 +26,7 @@ public class Weapon extends Piece {
 			{
 				p.takeDamage(damage);
 				
-				
-				Transform t = new Transform();
-				t.set(p.owner.body.getPosition(), p.owner.body.getAngle());
-				
-				Vec2 startAbs = Transform.mul(t, p.start);
-				Vec2 endAbs = Transform.mul(t, p.end);
-				
-				for(int i=0;i<damage*5;++i)
-				{
-					float pt = PetriDishEmpire.s.rand.nextFloat();
-					
-					Vec2 centerPoint = startAbs.mul(pt).add(endAbs.mul(1 - pt));
-					
-					PetriDishEmpire.s.entityAddQueue.add(new Spark(centerPoint, Color.rgb(255, 0, 0)));
-				}
+				p.emitSparks((int)(damage*0.5f), Color.rgb(255, 0, 0));
 				
 				damage = 0;
 				break;
