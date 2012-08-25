@@ -42,6 +42,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	private static final float DISH_HALFSIZE = 900;
 	private static final float MINIMAP_SIZE = 160;
+	private static final float KEY_CAMERA_MOVE_SPEED = 2;
+	
 	public Camera cam;
 	public World world;
 	public Random rand;
@@ -72,6 +74,13 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	int lastFrameFPS = 0;
 	
+	boolean camMoveLeft = false;
+	boolean camMoveRight = false;
+	boolean camMoveUp = false;
+	boolean camMoveDown = false;
+	
+	Vec2 camMoveRate = new Vec2();
+	
 	@Override
 	public void init() {
 		s = this;
@@ -84,7 +93,6 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 			@Override
 			public void render(Surface surface) {
-				cam.setCamera(new Vec2(0,0), 5);
 				
 				surface.clear();
 				cam.surf = surface;
@@ -250,6 +258,19 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		} else {
 			infoUpdateCountdown--;
 		}
+		
+		Vec2 desiredCamMove = new Vec2();
+		
+		if(camMoveLeft && !camMoveRight) desiredCamMove.x = -KEY_CAMERA_MOVE_SPEED;
+		if(!camMoveLeft && camMoveRight) desiredCamMove.x = KEY_CAMERA_MOVE_SPEED;
+		if(camMoveUp && !camMoveDown) desiredCamMove.y = KEY_CAMERA_MOVE_SPEED;
+		if(!camMoveUp && camMoveDown) desiredCamMove.y = -KEY_CAMERA_MOVE_SPEED;
+		
+		float INTERPOLATION = 0.9f;
+		
+		camMoveRate = (camMoveRate.mul(INTERPOLATION)).add(desiredCamMove.mul(1 - INTERPOLATION));
+		
+		cam.translateCamera(camMoveRate, 5);
 	}
 
 	@Override
@@ -358,6 +379,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			entities.add(crt);
 		}
 		
+		if(event.key() == Key.W) camMoveUp = true;
+		if(event.key() == Key.S) camMoveDown = true;
+		if(event.key() == Key.A) camMoveLeft = true;
+		if(event.key() == Key.D) camMoveRight = true;
+		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
 	}
 
@@ -370,6 +396,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	@Override
 	public void onKeyUp(Event event) {
 		if(event.key() == Key.SHIFT) shiftKeyDown = false;
+		
+		if(event.key() == Key.W) camMoveUp = false;
+		if(event.key() == Key.S) camMoveDown = false;
+		if(event.key() == Key.A) camMoveLeft = false;
+		if(event.key() == Key.D) camMoveRight = false;
 	}
 
 	@Override
