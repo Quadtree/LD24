@@ -137,18 +137,29 @@ public class PetriDishEmpire implements Game, Listener {
 
 	@Override
 	public void onMouseDown(ButtonEvent event) {
+		mouseScreenPos = new Vec2(event.x(), event.y());
+		
+		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+		
 		if(event.button() == Mouse.BUTTON_LEFT)
 		{
 			mouseScreenPos = new Vec2(event.x(), event.y());
 			
-			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
-			
 			mouseDownRealPos = new Vec2(mousePos);
+		}
+		if(event.button() == Mouse.BUTTON_RIGHT)
+		{
+			for(Creature c : creatures)
+			{
+				if(c.selected) c.setMoveTarget(mousePos);
+			}
 		}
 	}
 
 	@Override
 	public void onMouseUp(ButtonEvent event) {
+		mouseScreenPos = new Vec2(event.x(), event.y());
+		
 		if(event.button() == Mouse.BUTTON_LEFT)
 		{
 			Vec2 mousePos = cam.screenToReal(mouseScreenPos);

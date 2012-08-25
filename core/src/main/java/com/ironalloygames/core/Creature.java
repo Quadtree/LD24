@@ -128,11 +128,13 @@ public class Creature {
 			delta.normalize();
 			delta.mulLocal(enginePower);
 			
-			MassData md = new MassData();
+			body.applyForce(delta, body.getPosition());
+			
+			/*MassData md = new MassData();
 			
 			body.getMassData(md);
 			
-			body.applyForce(delta, md.center);
+			body.applyForce(delta, md.center);*/
 			
 			//System.out.println("Moving to " + delta);
 		}
