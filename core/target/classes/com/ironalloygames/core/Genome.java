@@ -7,6 +7,17 @@ public class Genome {
 	public List<Gene> genes = new ArrayList<Gene>();
 	public int arms;
 	
+	public Genome()
+	{
+		//while(PetriDishEmpire.s.rand.nextInt(5) != 0) genes.add(new Gene());
+		
+		int genes = (int)(PetriDishEmpire.s.rand.nextGaussian() * 3 + 5);
+		 
+		for(int i=0;i<genes;++i) this.genes.add(new Gene());
+	
+		arms = Math.max((int)Math.round(PetriDishEmpire.s.rand.nextGaussian()*3 + 3), 2);
+	}
+	
 	public Genome(List<Gene> genes, int arms) {
 		super();
 		this.genes = genes;
@@ -40,7 +51,7 @@ public class Genome {
 		for(int i=0;i<genes;++i)
 		{
 			int n = 1;
-			Gene g = new Gene((float)PetriDishEmpire.s.rand.nextGaussian() + 2, (float)PetriDishEmpire.s.rand.nextGaussian() + 2, (float)PetriDishEmpire.s.rand.nextGaussian(), (float)PetriDishEmpire.s.rand.nextGaussian());
+			Gene g = new Gene();
 			
 			for(int j=0;j<genomes.size();++j)
 			{

@@ -5,8 +5,14 @@ import static playn.core.PlayN.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.jbox2d.callbacks.ContactImpulse;
+import org.jbox2d.callbacks.ContactListener;
+import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.Contact;
+
+import com.ironalloygames.core.piece.Piece;
 
 import playn.core.Color;
 import playn.core.Game;
@@ -16,6 +22,7 @@ import playn.core.ImmediateLayer;
 import playn.core.Key;
 import playn.core.ImmediateLayer.Renderer;
 import playn.core.Keyboard.Event;
+import playn.core.Keyboard.TextType;
 import playn.core.Keyboard.TypedEvent;
 import playn.core.Mouse;
 import playn.core.Mouse.ButtonEvent;
@@ -24,8 +31,9 @@ import playn.core.Mouse.MotionEvent;
 import playn.core.Mouse.WheelEvent;
 import playn.core.PlayN;
 import playn.core.Surface;
+import playn.core.util.Callback;
 
-public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener {
+public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
 	public Camera cam;
 	public World world;
@@ -41,6 +49,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	Vec2 mouseScreenPos = new Vec2();
 	
 	Vec2 mouseDownRealPos = null;
+	
+	boolean shiftKeyDown = false;
 	
 	final static float BAND_SELECT_THRESH = 2;
 	
@@ -78,14 +88,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					}
 				}
 				
-				fps++;
 				
-				if(System.currentTimeMillis() / 1000 != lastSecond)
-				{
-					lastSecond = System.currentTimeMillis() / 1000;
-					System.out.println("FPS: " + fps);
-					fps = 0;
-				}
 			}
 		});
 	  
@@ -95,24 +98,17 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		rand = new Random();
 		
-		ArrayList<Gene> genes = new ArrayList<Gene>();
-		genes.add(new Gene(Gene.GT_ENGINE, 2, 0, 0));
-		genes.add(new Gene(Gene.GT_STRUCTURE, 2, 1, 0));
-		genes.add(new Gene(Gene.GT_WEAPON, 2, 1, 0));
-		genes.add(new Gene(Gene.GT_ARMOR, 2.3f, -1, 1));
+		for(int i=0;i<6;++i)
+		{
+			creatures.add(new Creature(new Vec2((i % 2) * 40, (i / 2) * 40 - 50), new Genome(), true));
+		}
 		
-		Genome genome = new Genome(genes, 3);
-		
-		Creature crt = new Creature(new Vec2(0,0), genome, true);
-		Creature crt2 = new Creature(new Vec2(20,0), genome, false);
-		
-		creatures.add(crt);
-		creatures.add(crt2);
-		
-		crt.setMoveTarget(new Vec2(20,0));
+		creatures.add(new Creature(new Vec2(100,100), new Genome(), false));
 		
 		PlayN.mouse().setListener(this);
 		PlayN.keyboard().setListener(this);
+		
+		world.setContactListener(this);
 	}
 
 	@Override
@@ -132,11 +128,20 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		}
 		
 		world.step(delta, 12, 12);
+		
+		fps++;
+		
+		if(System.currentTimeMillis() / 1000 != lastSecond)
+		{
+			lastSecond = System.currentTimeMillis() / 1000;
+			System.out.println("FPS: " + fps);
+			fps = 0;
+		}
 	}
 
 	@Override
 	public int updateRate() {
-		return 60;
+		return 16;
 	}
 
 	@Override
@@ -168,9 +173,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		{
 			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 			
-			for(Creature c : creatures)
+			if(!shiftKeyDown)
 			{
-				c.selected = false;
+				for(Creature c : creatures)
+				{
+					c.selected = false;
+				}
 			}
 			
 			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
@@ -234,6 +242,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			creatures.add(crt);
 		}
+		
+		if(event.key() == Key.SHIFT) shiftKeyDown = true;
 	}
 
 	@Override
@@ -244,6 +254,41 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 	@Override
 	public void onKeyUp(Event event) {
+		if(event.key() == Key.SHIFT) shiftKeyDown = false;
+	}
+
+	@Override
+	public void beginContact(Contact contact) {
+		if(contact.m_fixtureA.m_userData != null &&
+		   contact.m_fixtureB.m_userData != null &&
+		   contact.m_fixtureA.m_userData instanceof Piece &&
+		   contact.m_fixtureB.m_userData instanceof Piece)
+		{
+			((Piece)contact.m_fixtureA.m_userData).contactList.add(((Piece)contact.m_fixtureB.m_userData));
+			((Piece)contact.m_fixtureB.m_userData).contactList.add(((Piece)contact.m_fixtureA.m_userData));
+		}
+	}
+
+	@Override
+	public void endContact(Contact contact) {
+		if(contact.m_fixtureA.m_userData != null &&
+		   contact.m_fixtureB.m_userData != null &&
+		   contact.m_fixtureA.m_userData instanceof Piece &&
+		   contact.m_fixtureB.m_userData instanceof Piece)
+		{
+			((Piece)contact.m_fixtureA.m_userData).contactList.remove(((Piece)contact.m_fixtureB.m_userData));
+			((Piece)contact.m_fixtureB.m_userData).contactList.remove(((Piece)contact.m_fixtureA.m_userData));
+		}
+	}
+
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
 		// TODO Auto-generated method stub
 		
 	}	

@@ -22,6 +22,16 @@ public class Gene {
 	float angle;
 	float backtrack;
 	
+	public Gene()
+	{
+		geneType = PetriDishEmpire.s.rand.nextInt(6);
+		length = (float)PetriDishEmpire.s.rand.nextGaussian() * 2.f + 4.f;
+		angle = (float)PetriDishEmpire.s.rand.nextGaussian() * 0.5f;
+		backtrack = (float)PetriDishEmpire.s.rand.nextGaussian() * 2;
+		
+		clamp();
+	}
+	
 	public Gene(float geneType, float length, float angle, float backtrack) {
 		super();
 		this.geneType = geneType;
@@ -81,10 +91,11 @@ public class Gene {
 		
 		Vec2 parentEnd = new Vec2(0,0);
 		float parentAngle = startAngle;
+		Piece parent = null;
 		
 		if(previous.size() > 0)
 		{
-			Piece parent = previous.get(Math.max(previous.size() - bti - 1, 0));
+			parent = previous.get(Math.max(previous.size() - bti - 1, 0));
 			
 			parentEnd = parent.getEnd();
 			parentAngle = parent.getAngle();
@@ -105,5 +116,12 @@ public class Gene {
 		parentCreature.radius = Math.max(parentCreature.radius, end.length());
 		
 		previous.add(p);
+		
+		if(parent != null)
+		{
+			parent.childPieces.add(p);
+		}
+		
+		p.hp = p.getLength() * p.getHPMod();
 	}
 }

@@ -1,5 +1,7 @@
 package com.ironalloygames.core.piece;
 
+import java.util.ArrayList;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Transform;
@@ -17,6 +19,12 @@ public class Piece {
 	Vec2 end;
 	Fixture fixture;
 	public Creature owner;
+	
+	public float hp;
+	
+	public ArrayList<Piece> contactList = new ArrayList<Piece>();
+	
+	public ArrayList<Piece> childPieces = new ArrayList<Piece>();
 	
 	protected int getColor(){ return Color.rgb(255, 255, 255); }
 	
@@ -75,6 +83,27 @@ public class Piece {
 		return fd;
 	}
 	
+	public float takeDamage(float amount)
+	{
+		float food = 0;
+		
+		hp -= amount;
+		
+		if(hp <= 0)
+		{
+			food += getLength() * 10;
+			
+			for(Piece p : childPieces)
+			{
+				food += p.takeDamage(100000);
+			}
+		}
+		
+		return food;
+	}
+	
 	public float getSolarPower(){ return 0; }
 	public float getEnginePower(){ return 0; }
+	
+	public float getHPMod(){ return 1; } 
 }
