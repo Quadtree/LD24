@@ -66,6 +66,7 @@ public class Creature {
 		{
 			Fixture f = body.createFixture(p.getFixtureDef());
 			p.fixture = f;
+			p.hp = p.getMass() * p.getHPMod();
 		}
 		
 		moveTarget = new Vec2(pos);
@@ -150,8 +151,18 @@ public class Creature {
 		
 		mouseHover = false;
 		
-		for(Piece p : pieces)
-			p.update();
+		for(int i=0;i<pieces.size();++i)
+		{
+			if(pieces.get(i).hp > 0)
+			{
+				pieces.get(i).update();
+			} else {
+				body.destroyFixture(pieces.get(i).fixture);
+				pieces.remove(i);
+				i--;
+				this.recalculateStats();
+			}
+		}
 	}
 	
 	void renderBoundingBox(int color)

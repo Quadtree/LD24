@@ -98,12 +98,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		rand = new Random();
 		
-		for(int i=0;i<6;++i)
-		{
-			creatures.add(new Creature(new Vec2((i % 2) * 40, (i / 2) * 40 - 50), new Genome(), true));
-		}
-		
-		creatures.add(new Creature(new Vec2(100,100), new Genome(), false));
+		creatures.add(new Creature(new Vec2(10,10), new Genome(), false));
 		
 		PlayN.mouse().setListener(this);
 		PlayN.keyboard().setListener(this);
@@ -233,6 +228,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			{
 				if(c.selected) genomes.add(c.genome);
 			}
+			
+			if(genomes.size() == 0) genomes.add(new Genome());
 			
 			Genome genome = new Genome(genomes);
 			

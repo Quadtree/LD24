@@ -58,6 +58,7 @@ public class Gene {
 		this.length = g.length;
 		this.angle = g.angle;
 		this.backtrack = g.backtrack;
+		this.width = g.width;
 	}
 
 	public Gene mutate()
@@ -68,6 +69,7 @@ public class Gene {
 		ng.length += PetriDishEmpire.s.rand.nextGaussian() * 0.3f * MUTATION_MUL;
 		ng.angle += PetriDishEmpire.s.rand.nextGaussian() * MUTATION_MUL;
 		ng.backtrack += PetriDishEmpire.s.rand.nextGaussian() * 0.5f * MUTATION_MUL;
+		ng.width += PetriDishEmpire.s.rand.nextGaussian() * 0.3f * MUTATION_MUL;
 		
 		ng.clamp();
 		
@@ -126,7 +128,5 @@ public class Gene {
 		}
 		
 		p.width = width;
-		
-		p.hp = p.getLength() * p.getHPMod();
 	}
 }
