@@ -26,7 +26,8 @@ public class PetriDishEmpire implements Game {
 	
 	public static PetriDishEmpire s;
 	
-	Creature crt;
+	int fps = 0;
+	long lastSecond = 0;
 	
 	@Override
 	public void init() {
@@ -47,6 +48,15 @@ public class PetriDishEmpire implements Game {
 				{
 					c.render(cam);
 				}
+				
+				fps++;
+				
+				if(System.currentTimeMillis() / 1000 != lastSecond)
+				{
+					lastSecond = System.currentTimeMillis() / 1000;
+					System.out.println("FPS: " + fps);
+					fps = 0;
+				}
 			}
 		});
 	  
@@ -57,15 +67,15 @@ public class PetriDishEmpire implements Game {
 		rand = new Random();
 		
 		ArrayList<Gene> genes = new ArrayList<Gene>();
-		genes.add(new Gene(Gene.GT_STRUCTURE, 2, 0, 0));
+		genes.add(new Gene(Gene.GT_ENGINE, 2, 0, 0));
 		genes.add(new Gene(Gene.GT_STRUCTURE, 2, 1, 0));
-		genes.add(new Gene(Gene.GT_STRUCTURE, 2, 1, 0));
-		genes.add(new Gene(Gene.GT_STRUCTURE, 2, -1, 1));
+		genes.add(new Gene(Gene.GT_WEAPON, 2, 1, 0));
+		genes.add(new Gene(Gene.GT_ARMOR, 2.3f, -1, 1));
 		
-		Genome genome = new Genome(genes, 4);
+		Genome genome = new Genome(genes, 3);
 		
-		crt = new Creature(new Vec2(0,0), genome);
-		Creature crt2 = new Creature(new Vec2(8,0), genome);
+		Creature crt = new Creature(new Vec2(0,0), genome, true);
+		Creature crt2 = new Creature(new Vec2(20,0), genome, false);
 		
 		creatures.add(crt);
 		creatures.add(crt2);
@@ -78,8 +88,6 @@ public class PetriDishEmpire implements Game {
 	@Override
 	public void update(float delta) {
 		world.step(delta, 4, 4);
-		
-		crt.body.setAngularVelocity(0.001f);
 	}
 
 	@Override

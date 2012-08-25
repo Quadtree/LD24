@@ -14,11 +14,14 @@ import com.ironalloygames.core.piece.*;
 public class Creature {
 	public Body body;
 	Genome genome;
+	boolean playerOwned;
 	
 	ArrayList<Piece> pieces = new ArrayList<Piece>();
 	
-	public Creature(Vec2 pos, Genome genome)
+	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
+		this.playerOwned = playerOwned;
+		
 		BodyDef bd = new BodyDef();
 		bd.position = pos;
 		bd.type = BodyType.DYNAMIC;
@@ -33,7 +36,7 @@ public class Creature {
 			
 			for(Gene g : genome.genes)
 			{
-				g.build(arm, angle);
+				g.build(arm, angle, this);
 			}
 			
 			pieces.addAll(arm);

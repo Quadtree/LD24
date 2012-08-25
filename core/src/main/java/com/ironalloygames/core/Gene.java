@@ -49,7 +49,7 @@ public class Gene {
 		return ng;
 	}
 	
-	public void build(List<Piece> previous, float startAngle)
+	public void build(List<Piece> previous, float startAngle, Creature parentCreature)
 	{
 		Piece p = null;
 		
@@ -86,6 +86,8 @@ public class Gene {
 		end.addLocal(MathUtils.cos(absAngle) * length, MathUtils.sin(absAngle) * length);
 		
 		p.setEnd(end);
+		
+		p.owner = parentCreature;
 		
 		previous.add(p);
 	}
