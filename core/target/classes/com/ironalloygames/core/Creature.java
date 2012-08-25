@@ -62,7 +62,9 @@ public class Creature extends Entity{
 		{
 			Fixture f = body.createFixture(p.getFixtureDef());
 			p.fixture = f;
-			p.hp = p.getMass() * p.getHPMod();
+			p.hp = p.getMass();
+			
+			if(playerOwned) PetriDishEmpire.s.playerMoney -= p.getCostMod() * p.getMass();
 		}
 		
 		moveTarget = new Vec2(pos);

@@ -17,7 +17,7 @@ public class Spark extends Entity {
 		
 		body.setLinearVelocity(new Vec2((float)PetriDishEmpire.s.rand.nextGaussian()*3, (float)PetriDishEmpire.s.rand.nextGaussian()*3));
 		
-		System.out.println("SPARK POS " + body.getLinearVelocity());
+		//System.out.println("SPARK POS " + body.getLinearVelocity());
 		
 		CircleShape cs = new CircleShape();
 		cs.m_radius = 0.2f;
@@ -37,8 +37,6 @@ public class Spark extends Entity {
 	@Override
 	public void render() {
 		super.render();
-		
-		int x = Color.argb(0, 255, 255, 255);
 		
 		PetriDishEmpire.s.cam.drawLine(body.getPosition(), body.getPosition().sub(body.getLinearVelocity().mul(16)), (color & 0x00FFFFFF) + ((int)(lifespan * 255) << 24));
 	}

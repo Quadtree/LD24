@@ -74,13 +74,21 @@ public class Piece {
 	
 	public void emitSparks(int count, int color)
 	{
+		if(count < 1)
+		{
+			if(PetriDishEmpire.s.rand.nextFloat() < 0.2)
+			{
+				count = 1;
+			}
+		}
+		
 		Transform t = new Transform();
 		t.set(owner.body.getPosition(), owner.body.getAngle());
 		
 		Vec2 startAbs = Transform.mul(t, start);
 		Vec2 endAbs = Transform.mul(t, end);
 		
-		for(int i=0;i<count*5;++i)
+		for(int i=0;i<count;++i)
 		{
 			float pt = PetriDishEmpire.s.rand.nextFloat();
 			
@@ -117,7 +125,7 @@ public class Piece {
 	
 	public float takeDamage(float amount)
 	{
-		//System.out.println(amount + " damage taken!");
+		amount /= getHPMod();
 		
 		if(hp <= 0) return 0;
 		
@@ -127,7 +135,7 @@ public class Piece {
 		
 		if(hp <= 0)
 		{
-			emitSparks((int)(getMass()*0.2f), getColor());
+			emitSparks((int)(getMass()*1f), getColor());
 			
 			food += getLength() * 10;
 			
@@ -137,15 +145,21 @@ public class Piece {
 			}
 			
 			childPieces.clear();
+		} else {
+			emitSparks((int)(amount*3f), getHitSparkColor());
 		}
 		
 		return food;
 	}
+	
+	public int getHitSparkColor(){ return Color.rgb(255, 0, 0); }
 	
 	public void update(){}
 	
 	public float getSolarPower(){ return 0; }
 	public float getEnginePower(){ return 0; }
 	
-	public float getHPMod(){ return 1; } 
+	public float getHPMod(){ return 1; }
+	
+	public float getCostMod(){ return 1; }
 }

@@ -15,6 +15,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 
 import com.ironalloygames.core.piece.Piece;
 
+import playn.core.CanvasImage;
 import playn.core.Color;
 import playn.core.Game;
 import playn.core.Image;
@@ -31,7 +32,10 @@ import playn.core.Mouse.Listener;
 import playn.core.Mouse.MotionEvent;
 import playn.core.Mouse.WheelEvent;
 import playn.core.PlayN;
+import playn.core.Font;
 import playn.core.Surface;
+import playn.core.TextFormat;
+import playn.core.TextLayout;
 import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
@@ -57,11 +61,19 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
+	public float playerMoney = 50;
+	
+	public CanvasImage statsDisplay;
+	
+	Font drawFont;
+	
 	@Override
 	public void init() {
 		s = this;
 		
 		cam = new Camera();
+		
+		statsDisplay = graphics().createImage(256, 256);
 		
 		ImmediateLayer il = graphics().createImmediateLayer(new Renderer(){
 
@@ -91,7 +103,17 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					}
 				}
 				
+				statsDisplay.canvas().clear();
+				statsDisplay.canvas().setStrokeColor(Color.rgb(255, 255, 255));
 				
+				TextFormat tf = new TextFormat();
+				tf.font = new Font();
+				
+				TextLayout tl = new TextLayout();
+				
+				statsDisplay.canvas().strokeText(tl, 30.f, 30.f);
+				
+				surface.drawImage(statsDisplay, 0, 0);
 			}
 		});
 	  
@@ -156,6 +178,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			System.out.println("FPS: " + fps);
 			fps = 0;
 		}
+		
+		
 	}
 
 	@Override

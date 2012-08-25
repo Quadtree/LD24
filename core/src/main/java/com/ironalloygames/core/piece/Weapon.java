@@ -26,11 +26,13 @@ public class Weapon extends Piece {
 			{
 				p.takeDamage(damage);
 				
-				p.emitSparks((int)(damage*0.5f), Color.rgb(255, 0, 0));
+				
 				
 				damage = 0;
 				break;
 			}
 		}
 	}
+	
+	public float getCostMod(){ return 2; }
 }

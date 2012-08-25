@@ -9,4 +9,6 @@ public class SolarCell extends Piece {
 	public float getSolarPower() {
 		return 1 * getLength();
 	}
+	
+	public float getCostMod(){ return 1.6f; }
 }
