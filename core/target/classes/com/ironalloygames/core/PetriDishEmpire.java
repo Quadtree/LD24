@@ -62,7 +62,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 3000;
+	public float enemyMoney = 8000;
 	
 	public CanvasImage statsDisplay;
 	
@@ -148,6 +148,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	int enemiesOnField = 0;
 	int alliesOnField = 0;
+	
+	int infoUpdateCountdown = 0;
 
 	@Override
 	public void update(float delta) {
@@ -184,12 +186,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(enemyMoney > 0)
 		{
-			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * 2000,(rand.nextFloat() - 0.5f) * 2000), new Genome(), false));
+			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * 900,(rand.nextFloat() - 0.5f) * 900), new Genome(), false));
 		}
 		
 		
-		//if(rand.nextInt(4) == 0)
-		//{
+		if(infoUpdateCountdown <= 0)
+		{
 			statsDisplay.canvas().clear();
 			statsDisplay.canvas().setFillColor(Color.rgb(0, 255, 0));
 			statsDisplay.canvas().drawText("Food: " + playerMoney, 20, 20);
@@ -208,7 +210,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
 			statsDisplay.canvas().drawText("FPS: " + lastFrameFPS, 20, 140);
-		//}
+			
+			infoUpdateCountdown = 10;
+		} else {
+			infoUpdateCountdown--;
+		}
 	}
 
 	@Override

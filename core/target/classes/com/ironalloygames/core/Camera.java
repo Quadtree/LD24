@@ -24,10 +24,12 @@ public class Camera {
 		this.position = new Vec2(position);
 		this.zoom = zoom / PlayN.graphics().height();
 		
-		Vec2 offset = new Vec2(PlayN.graphics().width() / zoom, PlayN.graphics().height() / zoom);
+		Vec2 offset = new Vec2(PlayN.graphics().width() / zoom, PlayN.graphics().height() / zoom).mul(0.5f);
 		
 		upperLeftBound = position.sub(offset);
 		lowerRightBound = position.add(offset);
+		
+		System.out.println(upperLeftBound + " " + lowerRightBound);
 	}
 	
 	public Vec2 realToScreen(Vec2 input)

@@ -75,6 +75,8 @@ public class Creature extends Entity{
 		moveTarget = new Vec2(pos);
 		
 		recalculateStats();
+		
+		body.setActive(false);
 	}
 	
 	public void setMoveTarget(Vec2 moveTarget)
@@ -86,11 +88,10 @@ public class Creature extends Entity{
 	{
 		Camera cam = PetriDishEmpire.s.cam;
 		
-		if((body.getPosition().x < cam.upperLeftBound.x - radius &&
-		   body.getPosition().y < cam.upperLeftBound.y - radius)
-		   ||
-		   (body.getPosition().x > cam.lowerRightBound.x - radius &&
-		    body.getPosition().y > cam.lowerRightBound.y - radius))
+		if(body.getPosition().x < cam.upperLeftBound.x - radius ||
+		   body.getPosition().y < cam.upperLeftBound.y - radius ||
+		   body.getPosition().x > cam.lowerRightBound.x + radius ||
+		   body.getPosition().y > cam.lowerRightBound.y + radius)
 		{
 			return;
 		}
@@ -175,7 +176,14 @@ public class Creature extends Entity{
 			for(Entity e : PetriDishEmpire.s.entities)
 			{
 				if(e instanceof Creature && ((Creature) e).playerOwned)
-					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 500 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 500) woken = true;
+				{
+					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 100 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 100)
+					{
+						woken = true;
+						body.setActive(true);
+						break;
+					}
+				}
 			}
 		}
 	}
