@@ -40,6 +40,8 @@ import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
+	private static final float DISH_HALFSIZE = 900;
+	private static final float MINIMAP_SIZE = 160;
 	public Camera cam;
 	public World world;
 	public Random rand;
@@ -62,7 +64,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 8000;
+	public float enemyMoney = 4000;
 	
 	public CanvasImage statsDisplay;
 	
@@ -116,9 +118,42 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				}
 			}
 		});
+		
+		ImmediateLayer minimapIL = graphics().createImmediateLayer((int)MINIMAP_SIZE, (int)MINIMAP_SIZE, new Renderer(){
+
+			@Override
+			public void render(Surface surface) {
+				surface.setFillColor(Color.rgb(128, 128, 128));
+				surface.fillRect(0, 0, 1000, 1000);
+				
+				surface.setFillColor(Color.rgb(0, 0, 0));
+				surface.fillRect(1, 1, MINIMAP_SIZE - 2, MINIMAP_SIZE - 2);
+				
+				for(Creature c : getCreatures())
+				{
+					int color;
+					
+					if(c.playerOwned)
+						color = Color.rgb(128, 128, 255);
+					else
+						color = Color.rgb(255, 128, 0);
+					
+					Vec2 pos = new Vec2(c.body.getPosition());
+					
+					pos.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+					pos.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+					
+					//System.out.println(pos);
+					
+					surface.setFillColor(color);
+					surface.drawLine(pos.x, pos.y, pos.x+1, pos.y, 1);
+				}
+			}
+		});
 	  
 		graphics().rootLayer().add(il);
 		graphics().rootLayer().add(graphics().createImageLayer(statsDisplay));
+		graphics().rootLayer().addAt(minimapIL, graphics().width() - 40 - MINIMAP_SIZE, 40);
 		
 		world = new World(new Vec2(0,0), true);
 		
@@ -186,7 +221,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(enemyMoney > 0)
 		{
-			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * 900,(rand.nextFloat() - 0.5f) * 900), new Genome(), false));
+			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(), false));
 		}
 		
 		

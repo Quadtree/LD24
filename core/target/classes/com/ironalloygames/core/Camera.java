@@ -29,7 +29,7 @@ public class Camera {
 		upperLeftBound = position.sub(offset);
 		lowerRightBound = position.add(offset);
 		
-		System.out.println(upperLeftBound + " " + lowerRightBound);
+		//System.out.println(upperLeftBound + " " + lowerRightBound);
 	}
 	
 	public Vec2 realToScreen(Vec2 input)
