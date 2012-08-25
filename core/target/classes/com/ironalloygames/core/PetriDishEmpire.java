@@ -62,7 +62,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 10000;
+	public float enemyMoney = 3000;
 	
 	public CanvasImage statsDisplay;
 	

@@ -37,6 +37,8 @@ public class Creature extends Entity{
 	static final float BOUNDING_BOX_MUL =  1.15f;
 	static final float SELECTION_SIZE =  1.6f;
 	
+	boolean woken = false;
+	
 	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
 		super(pos);
@@ -138,35 +140,44 @@ public class Creature extends Entity{
 	
 	public void update()
 	{
-		Vec2 delta = moveTarget.sub(body.getPosition());
-		
-		if(delta.lengthSquared() > 1*1)
+		if(woken)
 		{
-			delta.normalize();
-			delta.mulLocal(enginePower);
+			Vec2 delta = moveTarget.sub(body.getPosition());
 			
-			body.applyForce(delta, body.getPosition());
-		}
-		
-		body.applyTorque(enginePower);
-		
-		mouseHover = false;
-		
-		for(int i=0;i<pieces.size();++i)
-		{
-			if(pieces.get(i).hp > 0)
+			if(delta.lengthSquared() > 1*1)
 			{
-				pieces.get(i).update();
-			} else {
-				body.destroyFixture(pieces.get(i).fixture);
-				pieces.remove(i);
-				i--;
-				this.recalculateStats();
+				delta.normalize();
+				delta.mulLocal(enginePower);
+				
+				body.applyForce(delta, body.getPosition());
+			}
+			
+			body.applyTorque(enginePower);
+			
+			mouseHover = false;
+			
+			for(int i=0;i<pieces.size();++i)
+			{
+				if(pieces.get(i).hp > 0)
+				{
+					pieces.get(i).update();
+				} else {
+					body.destroyFixture(pieces.get(i).fixture);
+					pieces.remove(i);
+					i--;
+					this.recalculateStats();
+				}
+			}
+			
+			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
+			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
+		} else {
+			for(Entity e : PetriDishEmpire.s.entities)
+			{
+				if(e instanceof Creature && ((Creature) e).playerOwned)
+					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 500 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 500) woken = true;
 			}
 		}
-		
-		body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
-		body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
 	}
 	
 	void renderBoundingBox(int color)
