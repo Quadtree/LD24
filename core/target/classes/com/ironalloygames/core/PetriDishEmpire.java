@@ -67,7 +67,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 4000;
+	public float enemyMoney = 2500;
 	
 	public CanvasImage statsDisplay;
 	
@@ -119,6 +119,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					}
 				}
 				
+				if(mouseScrollStart != null)
+				{
+					surface.setFillColor(0xFFFFFFFF);
+					surface.drawLine(mouseScrollStart.x, mouseScrollStart.y, mouseScreenPos.x, mouseScreenPos.y, 1);
+				}
+				
 				fps++;
 				
 				if(System.currentTimeMillis() / 1000 != lastSecond)
@@ -150,7 +156,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 						color = Color.rgb(255, 128, 0);
 					
 					Vec2 pos = new Vec2(c.body.getPosition());
-					
+					pos.y = -pos.y;
 					pos.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
 					pos.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 					
@@ -159,6 +165,22 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					surface.setFillColor(color);
 					surface.drawLine(pos.x, pos.y, pos.x+1, pos.y, 1);
 				}
+				
+				Vec2 ulb = new Vec2(cam.upperLeftBound);
+				ulb.y = -ulb.y;
+				ulb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+				ulb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+				
+				Vec2 lrb = new Vec2(cam.lowerRightBound);
+				lrb.y = -lrb.y;
+				lrb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+				lrb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+				
+				surface.setFillColor(0xFFFFFFFF);
+				surface.drawLine(ulb.x, ulb.y, lrb.x, ulb.y, 1);
+				surface.drawLine(ulb.x, ulb.y, ulb.x, lrb.y, 1);
+				surface.drawLine(lrb.x, lrb.y, lrb.x, ulb.y, 1);
+				surface.drawLine(lrb.x, lrb.y, ulb.x, lrb.y, 1);
 			}
 		});
 	  

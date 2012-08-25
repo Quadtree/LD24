@@ -141,6 +141,28 @@ public class Creature extends Entity{
 	
 	public void update()
 	{
+		if(woken && PetriDishEmpire.s.rand.nextInt(10000) == 0)
+		{
+			woken = false;
+			body.setActive(false);
+		}
+		
+		if(!woken)
+		{
+			for(Entity e : PetriDishEmpire.s.entities)
+			{
+				if(e instanceof Creature && ((Creature) e).playerOwned)
+				{
+					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 100 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 100)
+					{
+						woken = true;
+						body.setActive(true);
+						break;
+					}
+				}
+			}
+		}
+		
 		if(woken)
 		{
 			Vec2 delta = moveTarget.sub(body.getPosition());
@@ -172,19 +194,6 @@ public class Creature extends Entity{
 			
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
-		} else {
-			for(Entity e : PetriDishEmpire.s.entities)
-			{
-				if(e instanceof Creature && ((Creature) e).playerOwned)
-				{
-					if(Math.abs(e.body.getPosition().x - body.getPosition().x) < 100 || Math.abs(e.body.getPosition().y - body.getPosition().y) < 100)
-					{
-						woken = true;
-						body.setActive(true);
-						break;
-					}
-				}
-			}
 		}
 	}
 	
