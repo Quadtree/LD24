@@ -7,7 +7,7 @@ public class Armor extends Piece {
 
 	@Override
 	public float getHPMod() {
-		return 10;
+		return 4;
 	}
 
 	@Override

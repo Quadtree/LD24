@@ -90,7 +90,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		cam = new Camera();
 		
-		statsDisplay = graphics().createImage(160, 160);
+		statsDisplay = graphics().createImage(220, 160);
 		
 		ImmediateLayer il = graphics().createImmediateLayer(new Renderer(){
 
@@ -192,7 +192,10 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		rand = new Random();
 		
-		
+		while(enemyMoney > 0)
+		{
+			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(), false));
+		}
 		
 		PlayN.mouse().setListener(this);
 		PlayN.keyboard().setListener(this);
@@ -218,6 +221,9 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	int alliesOnField = 0;
 	
 	int infoUpdateCountdown = 0;
+	
+	float enemyBiomass = 0;
+	float alliedBiomass = 0;
 
 	@Override
 	public void update(float delta) {
@@ -226,6 +232,9 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		enemiesOnField = 0;
 		alliesOnField = 0;
+		
+		enemyBiomass = 0;
+		alliedBiomass = 0;
 		
 		for(Entity e : entities)
 		{
@@ -239,6 +248,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					enemiesOnField++;
 				else
 					alliesOnField++;
+				
+				if(!c.playerOwned)
+					enemyBiomass += c.body.getMass();
+				else
+					alliedBiomass += c.body.getMass();
 			}
 		}
 		
@@ -258,15 +272,37 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(enemyMoney > 0)
 		{
-			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(), false));
+			ArrayList<Genome> genomes = new ArrayList<Genome>();
+			
+			int sourceGenomes = (int)(rand.nextGaussian() * 1.5);
+			
+			List<Creature> creatures = getCreatures();
+			
+			for(int i=0;i<sourceGenomes;++i)
+			{
+				int n = 0;
+				Genome nextGenome = null;
+				
+				for(Creature c : creatures)
+				{
+					if(rand.nextInt(++n) == 0)
+						nextGenome = c.genome;
+				}
+				
+				genomes.add(nextGenome);
+			}
+			
+			if(genomes.size() == 0) genomes.add(new Genome());
+			
+			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(genomes), false));
 		}
 		
 		
 		if(infoUpdateCountdown <= 0)
 		{
 			statsDisplay.canvas().clear();
-			statsDisplay.canvas().setFillColor(Color.rgb(0, 255, 0));
-			statsDisplay.canvas().drawText("Food: " + playerMoney, 20, 20);
+			statsDisplay.canvas().setFillColor(playerMoney > 0 ? Color.rgb(0, 255, 0) : Color.rgb(255, 255, 0));
+			statsDisplay.canvas().drawText("Food: " + (int)playerMoney, 20, 20);
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(200, 200, 200));
 			statsDisplay.canvas().drawText("Population:", 20, 40);
@@ -275,10 +311,19 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			statsDisplay.canvas().drawText("" + alliesOnField, 100, 40);
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
-			statsDisplay.canvas().drawText("" + enemiesOnField, 130, 40);
+			statsDisplay.canvas().drawText("" + enemiesOnField, 150, 40);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(200, 200, 200));
+			statsDisplay.canvas().drawText("Biomass:", 20, 60);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(100, 100, 255));
+			statsDisplay.canvas().drawText("" + (int)alliedBiomass, 100, 60);
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
-			statsDisplay.canvas().drawText("Enemy Food: " + enemyMoney, 20, 120);
+			statsDisplay.canvas().drawText("" + (int)enemyBiomass, 150, 60);
+			
+			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
+			statsDisplay.canvas().drawText("Enemy Food: " + (int)enemyMoney, 20, 120);
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
 			statsDisplay.canvas().drawText("FPS: " + lastFrameFPS, 20, 140);
@@ -407,7 +452,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 	@Override
 	public void onKeyDown(Event event) {
-		if(event.key() == Key.B)
+		if(event.key() == Key.B && playerMoney > 0)
 		{
 			ArrayList<Genome> genomes = new ArrayList<Genome>();
 			

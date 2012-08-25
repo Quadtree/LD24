@@ -7,7 +7,7 @@ public class SolarCell extends Piece {
 
 	@Override
 	public float getSolarPower() {
-		return 1 * getLength();
+		return getMass() / 1400;
 	}
 	
 	public float getCostMod(){ return 1.6f; }

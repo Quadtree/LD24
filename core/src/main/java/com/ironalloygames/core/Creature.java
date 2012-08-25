@@ -192,6 +192,11 @@ public class Creature extends Entity{
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
 		}
+		
+		if(playerOwned)
+			PetriDishEmpire.s.playerMoney += this.solarRate;
+		else
+			PetriDishEmpire.s.enemyMoney += this.solarRate;
 	}
 	
 	void renderBoundingBox(int color)
