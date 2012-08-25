@@ -44,6 +44,25 @@ public class Camera {
 		return t;
 	}
 	
+	public Vec2 screenToReal(Vec2 input)
+	{
+		Vec2 t = new Vec2(input);
+		
+		t.x /= PlayN.graphics().height();
+		t.y /= PlayN.graphics().height();
+		
+		t.y = 1 - t.y;
+		
+		t.x -= 0.5f * PlayN.graphics().width() / PlayN.graphics().height();
+		t.y -= 0.5f;
+		
+		t.mulLocal(1.f / zoom);
+		
+		t.addLocal(position);
+		
+		return t;
+	}
+	
 	public void drawLine(Vec2 start, Vec2 end, int color)
 	{
 		Vec2 screenStart = realToScreen(start);

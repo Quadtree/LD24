@@ -14,9 +14,14 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.ImmediateLayer;
 import playn.core.ImmediateLayer.Renderer;
+import playn.core.Mouse.ButtonEvent;
+import playn.core.Mouse.Listener;
+import playn.core.Mouse.MotionEvent;
+import playn.core.Mouse.WheelEvent;
+import playn.core.PlayN;
 import playn.core.Surface;
 
-public class PetriDishEmpire implements Game {
+public class PetriDishEmpire implements Game, Listener {
 	
 	public Camera cam;
 	public World world;
@@ -28,6 +33,8 @@ public class PetriDishEmpire implements Game {
 	
 	int fps = 0;
 	long lastSecond = 0;
+	
+	Vec2 mouseScreenPos = new Vec2();
 	
 	@Override
 	public void init() {
@@ -81,6 +88,8 @@ public class PetriDishEmpire implements Game {
 		creatures.add(crt2);
 		
 		crt.setMoveTarget(new Vec2(20,0));
+		
+		PlayN.mouse().setListener(this);
 	}
 
 	@Override
@@ -90,8 +99,14 @@ public class PetriDishEmpire implements Game {
 	@Override
 	public void update(float delta) {
 		
+		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+		
 		for(Creature c : creatures)
+		{
 			c.update();
+			
+			if(c.isInBoundingBox(mousePos) && c.playerOwned) c.mouseHover = true;
+		}
 		
 		world.step(delta, 12, 12);
 	}
@@ -99,5 +114,39 @@ public class PetriDishEmpire implements Game {
 	@Override
 	public int updateRate() {
 		return 60;
+	}
+
+	@Override
+	public void onMouseDown(ButtonEvent event) {
+		mouseScreenPos = new Vec2(event.x(), event.y());
+		
+		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+		
+		for(Creature c : creatures)
+		{
+			c.selected = false;
+		}
+		
+		for(Creature c : creatures)
+		{
+			if(c.isInBoundingBox(mousePos) && c.playerOwned) c.selected = true;
+		}
+	}
+
+	@Override
+	public void onMouseUp(ButtonEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMouseMove(MotionEvent event) {
+		mouseScreenPos = new Vec2(event.x(), event.y());
+	}
+
+	@Override
+	public void onMouseWheelScroll(WheelEvent event) {
+		// TODO Auto-generated method stub
+		
 	}	
 }

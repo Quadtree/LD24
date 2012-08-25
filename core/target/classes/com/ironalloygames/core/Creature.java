@@ -38,7 +38,7 @@ public class Creature {
 	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
 		this.playerOwned = playerOwned;
-		selected = playerOwned;
+		//selected = playerOwned;
 		
 		BodyDef bd = new BodyDef();
 		bd.position = pos;
@@ -84,7 +84,7 @@ public class Creature {
 		if(!playerOwned)
 			cam.drawImage(body.getPosition(), "red-dot");
 		
-		//renderBoundingBox(Color.argb(64, 255, 255, 255));
+		if(mouseHover) renderBoundingBox(Color.argb(64, 255, 255, 255));
 		
 		if(selected)
 		{
@@ -136,6 +136,8 @@ public class Creature {
 			
 			//System.out.println("Moving to " + delta);
 		}
+		
+		mouseHover = false;
 	}
 	
 	void renderBoundingBox(int color)
