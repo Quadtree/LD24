@@ -93,7 +93,7 @@ public class PetriDishEmpire implements Game {
 		for(Creature c : creatures)
 			c.update();
 		
-		world.step(delta, 8, 8);
+		world.step(delta, 12, 12);
 	}
 
 	@Override

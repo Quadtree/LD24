@@ -68,7 +68,7 @@ public class Piece {
 		fd.userData = this;
 		
 		PolygonShape ps = new PolygonShape();
-		ps.setAsBox((getLength() / 2 + 0.1f), 0.1f, (start.add(end)).mul(0.5f), getAngle());
+		ps.setAsBox((getLength() / 2 + 0.5f), 0.2f, (start.add(end)).mul(0.5f), getAngle());
 		
 		fd.shape = ps;
 		

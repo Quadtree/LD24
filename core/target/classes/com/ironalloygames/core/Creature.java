@@ -10,12 +10,14 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 
+import playn.core.Color;
+
 import com.ironalloygames.core.piece.*;
 
 public class Creature {
 	public Body body;
 	Genome genome;
-	boolean playerOwned;
+	public boolean playerOwned;
 	
 	float solarRate;
 	float enginePower;
@@ -25,9 +27,18 @@ public class Creature {
 	
 	ArrayList<Piece> pieces = new ArrayList<Piece>();
 	
+	public boolean mouseHover;
+	public boolean selected;
+	
+	public float radius;
+	
+	static final float BOUNDING_BOX_MUL =  1.15f;
+	static final float SELECTION_SIZE =  1.6f;
+	
 	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
 		this.playerOwned = playerOwned;
+		selected = playerOwned;
 		
 		BodyDef bd = new BodyDef();
 		bd.position = pos;
@@ -69,6 +80,31 @@ public class Creature {
 		{
 			p.render(cam, this);
 		}
+		
+		if(!playerOwned)
+			cam.drawImage(body.getPosition(), "red-dot");
+		
+		//renderBoundingBox(Color.argb(64, 255, 255, 255));
+		
+		if(selected)
+		{
+			Vec2 ul = body.getPosition().add(new Vec2(-radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));
+			Vec2 ur = body.getPosition().add(new Vec2(radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));
+			Vec2 ll = body.getPosition().add(new Vec2(-radius*BOUNDING_BOX_MUL, -radius*BOUNDING_BOX_MUL));
+			Vec2 lr = body.getPosition().add(new Vec2(radius*BOUNDING_BOX_MUL, -radius*BOUNDING_BOX_MUL));
+			
+			cam.drawLine(ul, ul.add(new Vec2(SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
+			cam.drawLine(ul, ul.add(new Vec2(0, -SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			
+			cam.drawLine(ur, ur.add(new Vec2(-SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
+			cam.drawLine(ur, ur.add(new Vec2(0, -SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			
+			cam.drawLine(ll, ll.add(new Vec2(SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
+			cam.drawLine(ll, ll.add(new Vec2(0, SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			
+			cam.drawLine(lr, lr.add(new Vec2(-SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
+			cam.drawLine(lr, lr.add(new Vec2(0, SELECTION_SIZE)), Color.rgb(255, 255, 255));
+		}
 	}
 	
 	public void recalculateStats()
@@ -87,7 +123,7 @@ public class Creature {
 	{
 		Vec2 delta = moveTarget.sub(body.getPosition());
 		
-		if(delta.lengthSquared() > 5*5)
+		if(delta.lengthSquared() > 1*1)
 		{
 			delta.normalize();
 			delta.mulLocal(enginePower);
@@ -98,8 +134,19 @@ public class Creature {
 			
 			body.applyForce(delta, md.center);
 			
-			System.out.println("Moving to " + delta);
+			//System.out.println("Moving to " + delta);
 		}
+	}
+	
+	void renderBoundingBox(int color)
+	{
+		PetriDishEmpire.s.cam.drawRectangle(body.getPosition(), new Vec2(radius*BOUNDING_BOX_MUL*2, radius*BOUNDING_BOX_MUL*2), color);
+	}
+	
+	boolean isInBoundingBox(Vec2 pos)
+	{
+		return Math.abs(pos.x - body.getPosition().x) < radius*BOUNDING_BOX_MUL &&
+			   Math.abs(pos.y - body.getPosition().y) < radius*BOUNDING_BOX_MUL;
 	}
 }
 

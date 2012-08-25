@@ -89,6 +89,8 @@ public class Gene {
 		
 		p.owner = parentCreature;
 		
+		parentCreature.radius = Math.max(parentCreature.radius, end.length());
+		
 		previous.add(p);
 	}
 }
