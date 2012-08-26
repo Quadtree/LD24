@@ -101,6 +101,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	ImageLayer titleScreen = null;
 	ImageLayer helpScreen = null;
 	ImageLayer victoryScreen = null;
+	ImageLayer loadingScreen = null;
 	
 	@Override
 	public void init() {
@@ -251,6 +252,16 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		graphics().rootLayer().add(titleScreen);
 		
+		CanvasImage img = graphics().createImage(graphics().width(), graphics().height());
+		img.canvas().setFillColor(Color.rgb(0, 0, 0));
+		img.canvas().fillRect(0, 0, graphics().width(), graphics().height());
+		img.canvas().setFillColor(0xFFFFFFFF);
+		img.canvas().drawText("Loading... Please wait", graphics().width() / 2 - 20, graphics().height() / 2);
+		
+		loadingScreen = graphics().createImageLayer(img);
+		
+		graphics().rootLayer().add(loadingScreen);
+		
 		
 		world = new World(new Vec2(0,0), true);
 		
@@ -326,12 +337,14 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	@Override
 	public void update(float delta) {
 		
+		if(titleScreen != null && titleScreen.image().isReady()) loadingScreen.setVisible(false);
+		
 		if((titleScreen != null && titleScreen.visible()) || (helpScreen != null && helpScreen.visible()) || (victoryScreen != null && victoryScreen.visible())) return;
 		
 		if(!music.isPlaying())
 			music.play();
 		
-		if(alliedBiomass > 3200 && enemyBiomass < 800 && victoryScreen == null)
+		if(alliedBiomass >= 2000 && enemyBiomass <= 1000 && victoryScreen == null)
 		{
 			victoryScreen = graphics().createImageLayer(assets().getImage("images/victory.png"));
 			graphics().rootLayer().addAt(victoryScreen, graphics().width() / 2 - 320, graphics().height() / 2 - 180);
@@ -540,12 +553,15 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			mouseScrollStart = new Vec2(mouseScreenPos);
 		}
 		
-		if(titleScreen != null && titleScreen.visible())
-			titleScreen.setVisible(false);
-		else if(helpScreen != null && helpScreen.visible())
-			helpScreen.setVisible(false);
-		else if(victoryScreen != null && victoryScreen.visible())
-			victoryScreen.setVisible(false);
+		if(!loadingScreen.visible())
+		{
+			if(titleScreen != null && titleScreen.visible())
+				titleScreen.setVisible(false);
+			else if(helpScreen != null && helpScreen.visible())
+				helpScreen.setVisible(false);
+			else if(victoryScreen != null && victoryScreen.visible())
+				victoryScreen.setVisible(false);
+		}
 	}
 
 	@Override

@@ -31,11 +31,13 @@ public class Weapon extends Piece {
 					PetriDishEmpire.s.playerMoney += food;
 				else
 					PetriDishEmpire.s.enemyMoney += food;
-				
-				if(p instanceof Armor)
-					AudioSystem.play("hit_no_effect");
-				else
-					AudioSystem.play("hit" + PetriDishEmpire.s.rand.nextInt(2));
+				if(damage > 2)
+				{
+					if(p instanceof Armor)
+						AudioSystem.play("hit_no_effect");
+					else
+						AudioSystem.play("hit" + PetriDishEmpire.s.rand.nextInt(2));
+				}
 				
 				damage = 0;
 				break;

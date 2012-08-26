@@ -135,7 +135,7 @@ public class Piece {
 		
 		if(hp <= 0)
 		{
-			emitSparks((int)(getMass()*1f), getColor());
+			emitSparks((int)(getMass()*0.6f), getColor());
 			
 			food += getMass();
 			
@@ -146,7 +146,7 @@ public class Piece {
 			
 			childPieces.clear();
 		} else {
-			emitSparks((int)(amount*3f), getHitSparkColor());
+			emitSparks((int)(amount*2f), getHitSparkColor());
 		}
 		
 		return food;
