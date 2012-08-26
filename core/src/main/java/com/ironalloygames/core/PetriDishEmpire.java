@@ -584,17 +584,17 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(!loadingScreen.visible() && closeCooldown <= 0)
 		{
-			if(titleScreen != null && titleScreen.visible())
+			if(titleScreen != null && titleScreen.visible() && titleScreen.image().isReady())
 			{
 				titleScreen.setVisible(false);
 				closeCooldown = 10;
 			}
-			else if(helpScreen != null && helpScreen.visible())
+			else if(helpScreen != null && helpScreen.visible() && helpScreen.image().isReady())
 			{
 				helpScreen.setVisible(false);
 				closeCooldown = 10;
 			}
-			else if(victoryScreen != null && victoryScreen.visible())
+			else if(victoryScreen != null && victoryScreen.visible() && victoryScreen.image().isReady())
 			{
 				victoryScreen.setVisible(false);
 				closeCooldown = 45;
@@ -690,24 +690,29 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public void onKeyDown(Event event) {
 		if(event.key() == Key.B && playerMoney > 0)
 		{
-			ArrayList<Genome> genomes = new ArrayList<Genome>();
-			
-			for(Creature c : getCreatures())
-			{
-				if(c.selected) genomes.add(c.genome);
-			}
-			
-			if(genomes.size() == 0) genomes.add(new Genome());
-			
-			Genome genome = new Genome(genomes);
-			
 			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 			
-			Creature crt = new Creature(mousePos, genome, true);
-			
-			entities.add(crt);
-			
-			AudioSystem.play("split");
+			if(mousePos.length() < DISH_HALFSIZE - 20)
+			{
+				ArrayList<Genome> genomes = new ArrayList<Genome>();
+				
+				for(Creature c : getCreatures())
+				{
+					if(c.selected) genomes.add(c.genome);
+				}
+				
+				if(genomes.size() == 0) genomes.add(new Genome());
+				
+				Genome genome = new Genome(genomes);
+				
+				
+				
+				Creature crt = new Creature(mousePos, genome, true);
+				
+				entities.add(crt);
+				
+				AudioSystem.play("split");
+			}
 		}
 		
 		if(event.key() == Key.UP) camMoveUp = true;

@@ -83,6 +83,32 @@ public class Creature extends Entity{
 		body.setActive(false);
 		
 		if(!playerOwned && Math.round(genome.genes.get(genome.genes.size() - 1).geneType) == Gene.GT_WEAPON) aggressiveMode = true;
+		
+		boolean moved = true;
+		
+		int moves = 0;
+		
+		while(moved)
+		{
+			moved = false;
+			moves++;
+			
+			for(Creature c : PetriDishEmpire.s.getCreatures())
+			{
+				if(c == this) continue;
+				
+				float dist = c.body.getPosition().sub(body.getPosition()).length();
+				
+				if(dist < c.radius + radius + 2.f)
+				{
+					Vec2 delta = body.getPosition().sub(c.body.getPosition());
+					delta.normalize();
+					delta.mulLocal(moves);
+					body.setTransform(body.getPosition().add(delta), body.getAngle());
+					moved = true;
+				}
+			}
+		}
 	}
 	
 	public void setMoveTarget(Vec2 moveTarget)
