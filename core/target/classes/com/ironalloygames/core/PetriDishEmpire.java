@@ -105,6 +105,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public float lastFrameTotalBiomass = 0;
 	
+	int closeCooldown = 60;
+	
 	@Override
 	public void init() {
 		s = this;
@@ -339,6 +341,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	@Override
 	public void update(float delta) {
 		
+		closeCooldown--;
+		
 		if(titleScreen != null && titleScreen.image().isReady()) loadingScreen.setVisible(false);
 		
 		if((titleScreen != null && titleScreen.visible()) || (helpScreen != null && helpScreen.visible()) || (victoryScreen != null && victoryScreen.visible())) return;
@@ -556,14 +560,23 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			mouseScrollStart = new Vec2(mouseScreenPos);
 		}
 		
-		if(!loadingScreen.visible())
+		if(!loadingScreen.visible() && closeCooldown <= 0)
 		{
 			if(titleScreen != null && titleScreen.visible())
+			{
 				titleScreen.setVisible(false);
+				closeCooldown = 10;
+			}
 			else if(helpScreen != null && helpScreen.visible())
+			{
 				helpScreen.setVisible(false);
+				closeCooldown = 10;
+			}
 			else if(victoryScreen != null && victoryScreen.visible())
+			{
 				victoryScreen.setVisible(false);
+				closeCooldown = 45;
+			}
 		}
 	}
 
@@ -697,6 +710,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		}
 		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
+		
+		if(event.key() == Key.Y)
+		{
+			helpScreen.setVisible(true);
+			closeCooldown = 20;
+		}
 	}
 
 	@Override
