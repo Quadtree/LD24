@@ -481,6 +481,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
 			statsDisplay.canvas().drawText("" + (int)enemyBiomass, 150, 60);
 			
+			if(victoryScreen != null)
+			{
+				statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
+				statsDisplay.canvas().drawText("VICTORY!!!", 20, 80);
+			}
+			
 			/*statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
 			statsDisplay.canvas().drawText("Enemy Food: " + (int)enemyMoney, 20, 120);
 			
