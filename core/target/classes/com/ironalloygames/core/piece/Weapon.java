@@ -3,6 +3,7 @@ package com.ironalloygames.core.piece;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 
+import com.ironalloygames.core.AudioSystem;
 import com.ironalloygames.core.PetriDishEmpire;
 import com.ironalloygames.core.Spark;
 
@@ -30,6 +31,11 @@ public class Weapon extends Piece {
 					PetriDishEmpire.s.playerMoney += food;
 				else
 					PetriDishEmpire.s.enemyMoney += food;
+				
+				if(p instanceof Armor)
+					AudioSystem.play("hit_no_effect");
+				else
+					AudioSystem.play("hit" + PetriDishEmpire.s.rand.nextInt(2));
 				
 				damage = 0;
 				break;

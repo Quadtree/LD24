@@ -263,10 +263,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			polys.add(polygon);
 			
-			System.out.println(sectionStart + " " + sectionEnd + " " + center);
+			//System.out.println(sectionStart + " " + sectionEnd + " " + center);
 			
 			dishWalls.createFixture(polygon, 0);
 		}
+		
+		
 	}
 	
 	public List<Creature> getCreatures()
@@ -469,14 +471,19 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		}
 		if(event.button() == Mouse.BUTTON_RIGHT)
 		{
+			boolean any = false;
+			
 			for(Creature c : getCreatures())
 			{
 				if(c.selected)
 				{
 					c.setMoveTarget(mousePos);
 					c.aggressiveMode = false;
+					any = true;
 				}
 			}
+			
+			if(any) AudioSystem.play("move" + PetriDishEmpire.s.rand.nextInt(3));
 		}
 		if(event.button() == Mouse.BUTTON_MIDDLE)
 		{
@@ -500,6 +507,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				}
 			}
 			
+			boolean oneSelected = false;
+			
 			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
 			{
 				float bestDist = Float.MAX_VALUE;
@@ -518,10 +527,16 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					}
 				}
 				
-				if(bestSelectTarget != null) bestSelectTarget.selected = true;
+				if(bestSelectTarget != null)
+				{
+					bestSelectTarget.selected = true;
+					oneSelected = true;
+				}
 			} else {
 				Vec2 ul = new Vec2(Math.min(mousePos.x, mouseDownRealPos.x), Math.min(mousePos.y, mouseDownRealPos.y));
 				Vec2 lr = new Vec2(Math.max(mousePos.x, mouseDownRealPos.x), Math.max(mousePos.y, mouseDownRealPos.y));
+				
+				
 				
 				for(Creature c : getCreatures())
 				{
@@ -532,13 +547,14 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 						   c.body.getPosition().x <= lr.x &&
 						   c.body.getPosition().y <= lr.y)
 						{
+							oneSelected = true;
 							c.selected = true;
 						}
 					}
 				}
-				
-				
 			}
+			
+			if(oneSelected) AudioSystem.play("select" + PetriDishEmpire.s.rand.nextInt(3));
 			
 			mouseDownRealPos = null;
 		}
@@ -579,6 +595,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			Creature crt = new Creature(mousePos, genome, true);
 			
 			entities.add(crt);
+			
+			AudioSystem.play("split");
 		}
 		
 		if(event.key() == Key.UP) camMoveUp = true;
@@ -588,10 +606,18 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(event.key() == Key.A)
 		{
+			boolean agg = false;
+			
 			for(Creature c : getCreatures())
 			{
-				if(c.selected) c.aggressiveMode = true;
+				if(c.selected)
+				{
+					c.aggressiveMode = true;
+					agg = true;
+				}
 			}
+			
+			if(agg) AudioSystem.play("agg");
 		}
 		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
