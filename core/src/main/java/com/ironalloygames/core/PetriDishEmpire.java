@@ -38,6 +38,7 @@ import playn.core.Mouse.MotionEvent;
 import playn.core.Mouse.WheelEvent;
 import playn.core.PlayN;
 import playn.core.Font;
+import playn.core.Sound;
 import playn.core.Surface;
 import playn.core.TextFormat;
 import playn.core.TextLayout;
@@ -94,6 +95,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	ArrayList<PolygonShape> polys = new ArrayList<PolygonShape>();
 	
 	Image minimapImage;
+	
+	Sound music = null;
 	
 	@Override
 	public void init() {
@@ -303,6 +306,16 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 	@Override
 	public void update(float delta) {
+		
+		if(music == null)
+		{
+			music = assets().getSound("sound/music0");
+			music.setLooping(true);
+			music.setVolume(0.85f);
+			music.play();
+		} else {
+			if(!music.isPlaying()) music.play();
+		}
 		
 		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 		
