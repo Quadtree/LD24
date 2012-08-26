@@ -12,7 +12,7 @@ public class PetriDishEmpireHtml extends HtmlGame {
   public void start() {
     HtmlPlatform platform = HtmlPlatform.register();
     platform.assets().setPathPrefix("pde/");
-    PlayN.graphics().setSize(PlayN.graphics().screenWidth(), PlayN.graphics().screenHeight());
+    PlayN.graphics().setSize(PlayN.graphics().screenWidth() - 50, PlayN.graphics().screenHeight() - 50);
     PlayN.run(new PetriDishEmpire());
   }
 }

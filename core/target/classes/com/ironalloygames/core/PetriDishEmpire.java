@@ -74,7 +74,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 0;
+	public float enemyMoney = 1800;
 	
 	public CanvasImage statsDisplay;
 	
@@ -93,6 +93,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	ArrayList<PolygonShape> polys = new ArrayList<PolygonShape>();
 	
+	Image minimapImage;
+	
 	@Override
 	public void init() {
 		s = this;
@@ -100,6 +102,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		cam = new Camera();
 		
 		statsDisplay = graphics().createImage(220, 160);
+		
+		minimapImage = assets().getImage("images/minimap.png");
 		
 		ImmediateLayer il = graphics().createImmediateLayer(new Renderer(){
 
@@ -145,7 +149,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				for(PolygonShape ps : polys)
 				{
-					for(int i=1;i<ps.getVertexCount();++i)
+					for(int i=3;i<ps.getVertexCount();++i)
 					{
 						cam.drawLine(ps.getVertex(i-1), ps.getVertex(i), 0xFFFFFFFF);
 					}
@@ -157,11 +161,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 			@Override
 			public void render(Surface surface) {
-				surface.setFillColor(Color.rgb(128, 128, 128));
-				surface.fillRect(0, 0, 1000, 1000);
+				surface.drawImage(minimapImage, 0, 0);
+				//surface.setFillColor(Color.rgb(128, 128, 128));
+				//surface.fillRect(0, 0, 1000, 1000);
 				
-				surface.setFillColor(Color.rgb(0, 0, 0));
-				surface.fillRect(1, 1, MINIMAP_SIZE - 2, MINIMAP_SIZE - 2);
+				//surface.setFillColor(Color.rgb(0, 0, 0));
+				//surface.fillRect(1, 1, MINIMAP_SIZE - 2, MINIMAP_SIZE - 2);
 				
 				for(Creature c : getCreatures())
 				{
@@ -174,7 +179,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					
 					Vec2 pos = new Vec2(c.body.getPosition());
 					pos.y = -pos.y;
-					pos.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+					pos.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
 					pos.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 					
 					//System.out.println(pos);
@@ -188,12 +193,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				Vec2 ulb = new Vec2(cam.upperLeftBound);
 				ulb.y = -ulb.y;
-				ulb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+				ulb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
 				ulb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 				
 				Vec2 lrb = new Vec2(cam.lowerRightBound);
 				lrb.y = -lrb.y;
-				lrb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE);
+				lrb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
 				lrb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 				
 				surface.setFillColor(0xFFFFFFFF);
@@ -201,6 +206,25 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				surface.drawLine(ulb.x, ulb.y, ulb.x, lrb.y, 1);
 				surface.drawLine(lrb.x, lrb.y, lrb.x, ulb.y, 1);
 				surface.drawLine(lrb.x, lrb.y, ulb.x, lrb.y, 1);
+				
+				/*for(PolygonShape ps : polys)
+				{
+					for(int i=3;i<ps.getVertexCount();++i)
+					{
+						Vec2 v1 = new Vec2(ps.getVertex(i-1));
+						v1.y = -v1.y;
+						v1.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
+						v1.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+						
+						Vec2 v2 = new Vec2(ps.getVertex(i));
+						v2.y = -v2.y;
+						v2.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
+						v2.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+						
+						surface.setFillColor(0xFFFFFFFF);
+						surface.drawLine(v1.x, v1.y, v2.x, v2.y, 1);
+					}
+				}*/
 			}
 		});
 	  
@@ -214,7 +238,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		while(enemyMoney > 0)
 		{
-			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(), false));
+			entities.add(new Creature(makeRandomEnemyPos(), new Genome(), false));
 		}
 		
 		PlayN.mouse().setListener(this);
@@ -229,13 +253,13 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		for(float angle=0;angle<MathUtils.TWOPI;angle += (MathUtils.TWOPI / WALL_SECTIONS))
 		{
-			Vec2 sectionStart = new Vec2(MathUtils.cos(angle) * DISH_HALFSIZE, MathUtils.cos(angle) * DISH_HALFSIZE);
-			Vec2 sectionEnd = new Vec2(MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE, MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE);
+			Vec2 sectionStart = new Vec2(MathUtils.cos(angle) * DISH_HALFSIZE, MathUtils.sin(angle) * DISH_HALFSIZE);
+			Vec2 sectionEnd = new Vec2(MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE, MathUtils.sin(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE);
 			Vec2 center = sectionStart.add(sectionEnd).mul(0.5f);
 			
 			PolygonShape polygon = new PolygonShape();
 			
-			polygon.setAsBox(sectionStart.sub(sectionEnd).length(), 10, center, angle + MathUtils.HALF_PI);
+			polygon.setAsBox(sectionStart.sub(sectionEnd).length() / 2, 10, center, angle + MathUtils.HALF_PI - (MathUtils.TWOPI / WALL_SECTIONS / 2));
 			
 			polys.add(polygon);
 			
@@ -266,6 +290,14 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	float enemyBiomass = 0;
 	float alliedBiomass = 0;
+	
+	public Vec2 makeRandomEnemyPos()
+	{
+		float bearing = rand.nextFloat() * MathUtils.TWOPI;
+		float dist = rand.nextFloat() * DISH_HALFSIZE;
+		
+		return new Vec2(MathUtils.cos(bearing) * dist, MathUtils.sin(bearing) * dist);
+	}
 
 	@Override
 	public void update(float delta) {
@@ -354,7 +386,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			if(genomes.size() == 0) genomes.add(new Genome());
 			
-			entities.add(new Creature(new Vec2((rand.nextFloat() - 0.5f) * DISH_HALFSIZE,(rand.nextFloat() - 0.5f) * DISH_HALFSIZE), new Genome(genomes), false));
+			entities.add(new Creature(makeRandomEnemyPos(), new Genome(genomes), false));
 		}
 		
 		

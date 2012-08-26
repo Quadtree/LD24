@@ -229,6 +229,8 @@ public class Creature extends Entity{
 			
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
+			
+			System.out.println(body.getPosition());
 		}
 		
 		if(playerOwned)
