@@ -9,7 +9,12 @@ import java.util.Random;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.collision.Manifold;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
@@ -45,6 +50,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
 	
+	private static final int WALL_SECTIONS = 64;
+	
 	public Camera cam;
 	public World world;
 	public Random rand;
@@ -67,7 +74,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 1800;
+	public float enemyMoney = 0;
 	
 	public CanvasImage statsDisplay;
 	
@@ -83,6 +90,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	Vec2 camMoveRate = new Vec2();
 	
 	Vec2 mouseScrollStart = null;
+	
+	ArrayList<PolygonShape> polys = new ArrayList<PolygonShape>();
 	
 	@Override
 	public void init() {
@@ -132,6 +141,14 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					lastSecond = System.currentTimeMillis() / 1000;
 					lastFrameFPS = fps;
 					fps = 0;
+				}
+				
+				for(PolygonShape ps : polys)
+				{
+					for(int i=1;i<ps.getVertexCount();++i)
+					{
+						cam.drawLine(ps.getVertex(i-1), ps.getVertex(i), 0xFFFFFFFF);
+					}
 				}
 			}
 		});
@@ -204,6 +221,28 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		PlayN.keyboard().setListener(this);
 		
 		world.setContactListener(this);
+		
+		BodyDef bd = new BodyDef();
+		bd.type = BodyType.STATIC;
+		
+		Body dishWalls = world.createBody(bd);
+		
+		for(float angle=0;angle<MathUtils.TWOPI;angle += (MathUtils.TWOPI / WALL_SECTIONS))
+		{
+			Vec2 sectionStart = new Vec2(MathUtils.cos(angle) * DISH_HALFSIZE, MathUtils.cos(angle) * DISH_HALFSIZE);
+			Vec2 sectionEnd = new Vec2(MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE, MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE);
+			Vec2 center = sectionStart.add(sectionEnd).mul(0.5f);
+			
+			PolygonShape polygon = new PolygonShape();
+			
+			polygon.setAsBox(sectionStart.sub(sectionEnd).length(), 10, center, angle + MathUtils.HALF_PI);
+			
+			polys.add(polygon);
+			
+			System.out.println(sectionStart + " " + sectionEnd + " " + center);
+			
+			dishWalls.createFixture(polygon, 0);
+		}
 	}
 	
 	public List<Creature> getCreatures()
@@ -306,7 +345,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				for(Creature c : creatures)
 				{
-					if(rand.nextInt(++n) == 0)
+					if(!c.playerOwned && rand.nextInt(++n) == 0)
 						nextGenome = c.genome;
 				}
 				
@@ -400,7 +439,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		{
 			for(Creature c : getCreatures())
 			{
-				if(c.selected) c.setMoveTarget(mousePos);
+				if(c.selected)
+				{
+					c.setMoveTarget(mousePos);
+					c.aggressiveMode = false;
+				}
 			}
 		}
 		if(event.button() == Mouse.BUTTON_MIDDLE)
@@ -516,14 +559,6 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			for(Creature c : getCreatures())
 			{
 				if(c.selected) c.aggressiveMode = true;
-			}
-		}
-		
-		if(event.key() == Key.S)
-		{
-			for(Creature c : getCreatures())
-			{
-				if(c.selected) c.aggressiveMode = false;
 			}
 		}
 		

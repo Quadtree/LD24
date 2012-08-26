@@ -175,6 +175,29 @@ public class Creature extends Entity{
 		
 		if(woken)
 		{
+			if(aggressiveMode)
+			{
+				float bestDist = 200*200;
+				Creature target = null;
+				
+				for(Creature c : PetriDishEmpire.s.getCreatures())
+				{
+					if(c.playerOwned != playerOwned)
+					{
+						float dist = body.getPosition().sub(c.body.getPosition()).lengthSquared();
+						
+						if(dist < bestDist)
+						{
+							bestDist = dist;
+							target = c;
+						}
+					}
+				}
+				
+				if(target != null)
+					moveTarget = target.body.getPosition();
+			}
+			
 			Vec2 delta = moveTarget.sub(body.getPosition());
 			
 			if(delta.lengthSquared() > 1*1)
@@ -206,29 +229,6 @@ public class Creature extends Entity{
 			
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
-			
-			if(aggressiveMode)
-			{
-				float bestDist = 200*200;
-				Creature target = null;
-				
-				for(Creature c : PetriDishEmpire.s.getCreatures())
-				{
-					if(c.playerOwned != playerOwned)
-					{
-						float dist = moveTarget.sub(c.body.getPosition()).lengthSquared();
-						
-						if(dist < bestDist)
-						{
-							bestDist = dist;
-							target = c;
-						}
-					}
-				}
-				
-				if(target != null)
-					moveTarget = target.body.getPosition();
-			}
 		}
 		
 		if(playerOwned)
