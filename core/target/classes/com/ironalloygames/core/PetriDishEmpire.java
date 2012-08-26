@@ -244,6 +244,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		titleScreen = graphics().createImageLayer(assets().getImage("images/title.png"));
 		titleScreen.setScale(graphics().height() / 1080.f);
+		
+		float offscreen = (graphics().height() / 1080.f) * 1920 - graphics().width();
+		
+		titleScreen.setTranslation(-offscreen / 2, 0);
+		
 		graphics().rootLayer().add(titleScreen);
 		
 		
@@ -444,11 +449,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
 			statsDisplay.canvas().drawText("" + (int)enemyBiomass, 150, 60);
 			
-			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
+			/*statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
 			statsDisplay.canvas().drawText("Enemy Food: " + (int)enemyMoney, 20, 120);
 			
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
-			statsDisplay.canvas().drawText("FPS: " + lastFrameFPS, 20, 140);
+			statsDisplay.canvas().drawText("FPS: " + lastFrameFPS, 20, 140);*/
 			
 			infoUpdateCountdown = 10;
 		} else {
@@ -488,6 +493,23 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	@Override
 	public void onMouseDown(ButtonEvent event) {
 		mouseScreenPos = new Vec2(event.x(), event.y());
+		
+		Vec2 minimapCenter = new Vec2(graphics().width() - 40 - (MINIMAP_SIZE / 2), 40 + (MINIMAP_SIZE / 2));
+		
+		if(mouseScreenPos.sub(minimapCenter).length() <= MINIMAP_SIZE / 2)
+		{
+			Vec2 pos = new Vec2(mouseScreenPos.sub(new Vec2(graphics().width() - 40 - MINIMAP_SIZE, 40)));
+			
+			pos.subLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
+			pos.mulLocal(1.f / (MINIMAP_SIZE / DISH_HALFSIZE / 2));
+			pos.y = -pos.y;
+			
+			cam.setCamera(pos, 5);
+			camMoveRate.x = 0;
+			camMoveRate.y = 0;
+			
+			return;
+		}
 		
 		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 		

@@ -37,7 +37,7 @@ public class Genome {
 		
 		avgArms += PetriDishEmpire.s.rand.nextGaussian() * 0.15f;
 		
-		arms = Math.round(avgArms);
+		arms = Math.max(Math.round(avgArms), 2);
 		
 		float avgGenes = 0;
 		
@@ -48,7 +48,7 @@ public class Genome {
 		
 		avgGenes += PetriDishEmpire.s.rand.nextGaussian() * 0.3f;
 		
-		int genes = Math.round(avgGenes);
+		int genes = Math.max(Math.round(avgGenes), 1);
 		
 		for(int i=0;i<genes;++i)
 		{
