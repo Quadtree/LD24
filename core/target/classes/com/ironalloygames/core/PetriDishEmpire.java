@@ -41,7 +41,7 @@ import playn.core.util.Callback;
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
 	private static final float DISH_HALFSIZE = 900;
-	private static final float MINIMAP_SIZE = 160;
+	private static final float MINIMAP_SIZE = 320;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
 	
@@ -67,7 +67,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
 	public float playerMoney = 700;
-	public float enemyMoney = 2500;
+	public float enemyMoney = 1800;
 	
 	public CanvasImage statsDisplay;
 	
@@ -162,8 +162,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					
 					//System.out.println(pos);
 					
+					float RAD_MUL = 1.f / 7.f;
+					
 					surface.setFillColor(color);
-					surface.drawLine(pos.x, pos.y, pos.x+1, pos.y, 1);
+					surface.fillRect(pos.x - c.radius * RAD_MUL, pos.y - c.radius * RAD_MUL, c.radius * RAD_MUL * 2, c.radius * RAD_MUL * 2);
+					//surface.drawLine(pos.x, pos.y, pos.x+1, pos.y, 1);
 				}
 				
 				Vec2 ulb = new Vec2(cam.upperLeftBound);
@@ -236,13 +239,31 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		enemyBiomass = 0;
 		alliedBiomass = 0;
 		
+		float bestDist = Float.MAX_VALUE;
+		Creature bestSelectTarget = null;
+		
+		for(Creature c : getCreatures())
+		{
+			if(c.isInBoundingBox(mousePos) && c.playerOwned)
+			{
+				float dist = c.body.getPosition().sub(mousePos).lengthSquared();
+				if(dist < bestDist)
+				{
+					 bestSelectTarget = c;
+					 bestDist = dist;
+				}
+			}
+		}
+		
 		for(Entity e : entities)
 		{
 			e.update();
+			
 			if(e instanceof Creature)
 			{
 				Creature c = (Creature)e;
-				if(c.isInBoundingBox(mousePos) && c.playerOwned) c.mouseHover = true;
+				
+				if(c == bestSelectTarget) c.mouseHover = true;
 				
 				if(!c.playerOwned)
 					enemiesOnField++;
@@ -406,10 +427,23 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
 			{
+				float bestDist = Float.MAX_VALUE;
+				Creature bestSelectTarget = null;
+				
 				for(Creature c : getCreatures())
 				{
-					if(c.isInBoundingBox(mousePos) && c.playerOwned) c.selected = true;
+					if(c.isInBoundingBox(mousePos) && c.playerOwned)
+					{
+						float dist = c.body.getPosition().sub(mousePos).lengthSquared();
+						if(dist < bestDist)
+						{
+							 bestSelectTarget = c;
+							 bestDist = dist;
+						}
+					}
 				}
+				
+				if(bestSelectTarget != null) bestSelectTarget.selected = true;
 			} else {
 				Vec2 ul = new Vec2(Math.min(mousePos.x, mouseDownRealPos.x), Math.min(mousePos.y, mouseDownRealPos.y));
 				Vec2 lr = new Vec2(Math.max(mousePos.x, mouseDownRealPos.x), Math.max(mousePos.y, mouseDownRealPos.y));
