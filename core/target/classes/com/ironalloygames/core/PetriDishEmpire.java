@@ -303,6 +303,18 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			dishWalls.createFixture(polygon, 0);
 		}
 		
+		AudioSystem.preload("agg");
+		AudioSystem.preload("hit_no_effect");
+		AudioSystem.preload("hit0");
+		AudioSystem.preload("hit1");
+		AudioSystem.preload("split");
+		AudioSystem.preload("select0");
+		AudioSystem.preload("select1");
+		AudioSystem.preload("select2");
+		AudioSystem.preload("move0");
+		AudioSystem.preload("move1");
+		AudioSystem.preload("move2");
+		
 		music = assets().getSound("sound/music0");
 		music.setLooping(true);
 		//music.setVolume(0.85f);
@@ -345,7 +357,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		if(titleScreen != null && titleScreen.image().isReady()) loadingScreen.setVisible(false);
 		
-		if((titleScreen != null && titleScreen.visible()) || (helpScreen != null && helpScreen.visible()) || (victoryScreen != null && victoryScreen.visible())) return;
+		if((titleScreen != null && titleScreen.visible()) || (helpScreen != null && helpScreen.visible()) || (victoryScreen != null && victoryScreen.visible()))
+		{
+			cam.translateCamera(new Vec2(), 5);
+			return;
+		}
 		
 		if(!music.isPlaying())
 			music.play();

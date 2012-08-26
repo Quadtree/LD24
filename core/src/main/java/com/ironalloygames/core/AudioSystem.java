@@ -14,5 +14,11 @@ public class AudioSystem {
 		sounds.get(name).play();
 	}
 	
+	public static void preload(String name)
+	{
+		if(!sounds.containsKey(name))
+			sounds.put(name, PlayN.assets().getSound("sound/" + name));
+	}
+	
 	static HashMap<String, Sound> sounds = new HashMap<String, Sound>();
 }
