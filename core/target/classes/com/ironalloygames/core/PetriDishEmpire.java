@@ -46,7 +46,7 @@ import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
-	private static final float DISH_HALFSIZE = 720;
+	private static final float DISH_HALFSIZE = 450;
 	private static final float MINIMAP_SIZE = 320;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
@@ -74,8 +74,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
-	public float playerMoney = 500;
-	public float enemyMoney = 1200;
+	public float playerMoney = 450;
+	public float enemyMoney = 600;
 	
 	public CanvasImage statsDisplay;
 	
@@ -102,6 +102,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	ImageLayer helpScreen = null;
 	ImageLayer victoryScreen = null;
 	ImageLayer loadingScreen = null;
+	
+	public float lastFrameTotalBiomass = 0;
 	
 	@Override
 	public void init() {
@@ -344,11 +346,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		if(!music.isPlaying())
 			music.play();
 		
-		if(alliedBiomass >= 2000 && enemyBiomass <= 1000 && victoryScreen == null)
-		{
-			victoryScreen = graphics().createImageLayer(assets().getImage("images/victory.png"));
-			graphics().rootLayer().addAt(victoryScreen, graphics().width() / 2 - 320, graphics().height() / 2 - 180);
-		}
+		lastFrameTotalBiomass = alliedBiomass + enemyBiomass;
 		
 		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 		
@@ -496,7 +494,11 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		cam.translateCamera(camMoveRate, 5);
 		
-		
+		if(alliedBiomass >= enemyBiomass * 2 && victoryScreen == null)
+		{
+			victoryScreen = graphics().createImageLayer(assets().getImage("images/victory.png"));
+			graphics().rootLayer().addAt(victoryScreen, graphics().width() / 2 - 320, graphics().height() / 2 - 180);
+		}
 	}
 
 	@Override

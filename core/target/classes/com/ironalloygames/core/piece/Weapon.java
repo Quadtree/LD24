@@ -31,6 +31,7 @@ public class Weapon extends Piece {
 					PetriDishEmpire.s.playerMoney += food;
 				else
 					PetriDishEmpire.s.enemyMoney += food;
+				
 				if(damage > 2)
 				{
 					if(p instanceof Armor)

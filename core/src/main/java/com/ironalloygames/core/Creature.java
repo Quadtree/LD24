@@ -235,10 +235,13 @@ public class Creature extends Entity{
 			//System.out.println(body.getPosition());
 		}
 		
-		if(playerOwned)
-			PetriDishEmpire.s.playerMoney += this.solarRate;
-		else
-			PetriDishEmpire.s.enemyMoney += this.solarRate;
+		if(PetriDishEmpire.s.lastFrameTotalBiomass < 1700)
+		{
+			if(playerOwned)
+				PetriDishEmpire.s.playerMoney += this.solarRate;
+			else
+				PetriDishEmpire.s.enemyMoney += this.solarRate;
+		}
 	}
 	
 	void renderBoundingBox(int color)
