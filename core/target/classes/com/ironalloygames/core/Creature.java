@@ -37,7 +37,11 @@ public class Creature extends Entity{
 	static final float BOUNDING_BOX_MUL =  1.15f;
 	static final float SELECTION_SIZE =  1.6f;
 	
+	public boolean aggressiveMode = false;
+	
 	boolean woken = false;
+	
+	int spinDir = 1;
 	
 	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
 	{
@@ -77,6 +81,8 @@ public class Creature extends Entity{
 		recalculateStats();
 		
 		body.setActive(false);
+		
+		if(!playerOwned && Math.round(genome.genes.get(genome.genes.size() - 1).geneType) == Gene.GT_WEAPON) aggressiveMode = true;
 	}
 	
 	public void setMoveTarget(Vec2 moveTarget)
@@ -108,22 +114,29 @@ public class Creature extends Entity{
 		
 		if(selected)
 		{
+			int color;
+			
+			if(!aggressiveMode)
+				color = Color.rgb(255, 255, 255);
+			else
+				color = Color.rgb(255, 0, 0);
+			
 			Vec2 ul = body.getPosition().add(new Vec2(-radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));
 			Vec2 ur = body.getPosition().add(new Vec2(radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));
 			Vec2 ll = body.getPosition().add(new Vec2(-radius*BOUNDING_BOX_MUL, -radius*BOUNDING_BOX_MUL));
 			Vec2 lr = body.getPosition().add(new Vec2(radius*BOUNDING_BOX_MUL, -radius*BOUNDING_BOX_MUL));
 			
-			cam.drawLine(ul, ul.add(new Vec2(SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
-			cam.drawLine(ul, ul.add(new Vec2(0, -SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			cam.drawLine(ul, ul.add(new Vec2(SELECTION_SIZE, 0)), color);
+			cam.drawLine(ul, ul.add(new Vec2(0, -SELECTION_SIZE)), color);
 			
-			cam.drawLine(ur, ur.add(new Vec2(-SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
-			cam.drawLine(ur, ur.add(new Vec2(0, -SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			cam.drawLine(ur, ur.add(new Vec2(-SELECTION_SIZE, 0)), color);
+			cam.drawLine(ur, ur.add(new Vec2(0, -SELECTION_SIZE)), color);
 			
-			cam.drawLine(ll, ll.add(new Vec2(SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
-			cam.drawLine(ll, ll.add(new Vec2(0, SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			cam.drawLine(ll, ll.add(new Vec2(SELECTION_SIZE, 0)), color);
+			cam.drawLine(ll, ll.add(new Vec2(0, SELECTION_SIZE)), color);
 			
-			cam.drawLine(lr, lr.add(new Vec2(-SELECTION_SIZE, 0)), Color.rgb(255, 255, 255));
-			cam.drawLine(lr, lr.add(new Vec2(0, SELECTION_SIZE)), Color.rgb(255, 255, 255));
+			cam.drawLine(lr, lr.add(new Vec2(-SELECTION_SIZE, 0)), color);
+			cam.drawLine(lr, lr.add(new Vec2(0, SELECTION_SIZE)), color);
 		}
 	}
 	
@@ -172,7 +185,9 @@ public class Creature extends Entity{
 				body.applyForce(delta, body.getPosition());
 			}
 			
-			body.applyTorque(enginePower);
+			body.applyTorque(enginePower*2.5f*spinDir);
+			
+			if(PetriDishEmpire.s.rand.nextInt(400) == 0) spinDir = -spinDir;
 			
 			mouseHover = false;
 			
@@ -191,6 +206,29 @@ public class Creature extends Entity{
 			
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
+			
+			if(aggressiveMode)
+			{
+				float bestDist = 200*200;
+				Creature target = null;
+				
+				for(Creature c : PetriDishEmpire.s.getCreatures())
+				{
+					if(c.playerOwned != playerOwned)
+					{
+						float dist = moveTarget.sub(c.body.getPosition()).lengthSquared();
+						
+						if(dist < bestDist)
+						{
+							bestDist = dist;
+							target = c;
+						}
+					}
+				}
+				
+				if(target != null)
+					moveTarget = target.body.getPosition();
+			}
 		}
 		
 		if(playerOwned)

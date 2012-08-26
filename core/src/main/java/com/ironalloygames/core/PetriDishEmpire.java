@@ -506,10 +506,26 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			entities.add(crt);
 		}
 		
-		if(event.key() == Key.W) camMoveUp = true;
-		if(event.key() == Key.S) camMoveDown = true;
-		if(event.key() == Key.A) camMoveLeft = true;
-		if(event.key() == Key.D) camMoveRight = true;
+		if(event.key() == Key.UP) camMoveUp = true;
+		if(event.key() == Key.DOWN) camMoveDown = true;
+		if(event.key() == Key.LEFT) camMoveLeft = true;
+		if(event.key() == Key.RIGHT) camMoveRight = true;
+		
+		if(event.key() == Key.A)
+		{
+			for(Creature c : getCreatures())
+			{
+				if(c.selected) c.aggressiveMode = true;
+			}
+		}
+		
+		if(event.key() == Key.S)
+		{
+			for(Creature c : getCreatures())
+			{
+				if(c.selected) c.aggressiveMode = false;
+			}
+		}
 		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
 	}
@@ -524,10 +540,10 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public void onKeyUp(Event event) {
 		if(event.key() == Key.SHIFT) shiftKeyDown = false;
 		
-		if(event.key() == Key.W) camMoveUp = false;
-		if(event.key() == Key.S) camMoveDown = false;
-		if(event.key() == Key.A) camMoveLeft = false;
-		if(event.key() == Key.D) camMoveRight = false;
+		if(event.key() == Key.UP) camMoveUp = false;
+		if(event.key() == Key.DOWN) camMoveDown = false;
+		if(event.key() == Key.LEFT) camMoveLeft = false;
+		if(event.key() == Key.RIGHT) camMoveRight = false;
 	}
 
 	@Override
