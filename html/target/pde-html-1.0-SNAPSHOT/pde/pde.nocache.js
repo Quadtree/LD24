@@ -244,7 +244,7 @@ function pde(){
   $stats && $stats({moduleName:'pde', sessionId:$sessionId_0, subSystem:'startup', evtGroup:'bootstrap', millis:(new Date).getTime(), type:'selectingPermutation'});
   if (!isHostedMode()) {
     try {
-      strongName = '3F57EC1B6C9CCA0CB1F438157C9C2372';
+      strongName = '84850545515D743C96A2CB0BEA75DDEF';
       var idx = strongName.indexOf(':');
       if (idx != -1) {
         softPermutationId = Number(strongName.substring(idx + 1));

@@ -46,7 +46,7 @@ import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
-	private static final float DISH_HALFSIZE = 900;
+	private static final float DISH_HALFSIZE = 720;
 	private static final float MINIMAP_SIZE = 320;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
@@ -62,7 +62,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public static PetriDishEmpire s;
 	
 	int fps = 0;
-	long lastSecond = 0;
+	int lastSecond = 0;
 	
 	Vec2 mouseScreenPos = new Vec2();
 	
@@ -74,8 +74,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
-	public float playerMoney = 700;
-	public float enemyMoney = 1800;
+	public float playerMoney = 500;
+	public float enemyMoney = 1200;
 	
 	public CanvasImage statsDisplay;
 	
@@ -150,7 +150,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				if(System.currentTimeMillis() / 1000 != lastSecond)
 				{
-					lastSecond = System.currentTimeMillis() / 1000;
+					lastSecond = (int)(System.currentTimeMillis() / 1000);
 					lastFrameFPS = fps;
 					fps = 0;
 				}
@@ -407,8 +407,9 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		entities.addAll(entityAddQueue);
 		entityAddQueue.clear();
-		
-		world.step(delta, 3, 3);
+		try {
+			world.step(delta, 3, 3);
+		} catch(Exception e){ System.out.println(e); }
 		
 		if(enemyMoney > 0)
 		{
@@ -568,7 +569,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public void onMouseUp(ButtonEvent event) {
 		mouseScreenPos = new Vec2(event.x(), event.y());
 		
-		if(event.button() == Mouse.BUTTON_LEFT)
+		if(event.button() == Mouse.BUTTON_LEFT && mouseDownRealPos != null)
 		{
 			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 			

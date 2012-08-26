@@ -1,0 +1,11 @@
+<module rename-to='pde'>
+  <inherits name='playn.PlayNFlash'/>
+  <inherits name='org.jbox2d.GwtBox2D'/>
+
+  <source path='core'/>
+  <source path='flash'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.ironalloygames.flash.PetriDishEmpireFlash'/>
+</module>
