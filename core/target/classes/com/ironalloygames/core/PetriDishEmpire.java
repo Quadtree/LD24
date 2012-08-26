@@ -566,7 +566,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			boolean oneSelected = false;
 			
-			if(mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
+			if(mouseDownRealPos != null && mousePos.sub(mouseDownRealPos).length() < BAND_SELECT_THRESH)
 			{
 				float bestDist = Float.MAX_VALUE;
 				Creature bestSelectTarget = null;
@@ -589,7 +589,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					bestSelectTarget.selected = true;
 					oneSelected = true;
 				}
-			} else {
+			} else if(mouseDownRealPos != null){
 				Vec2 ul = new Vec2(Math.min(mousePos.x, mouseDownRealPos.x), Math.min(mousePos.y, mouseDownRealPos.y));
 				Vec2 lr = new Vec2(Math.max(mousePos.x, mouseDownRealPos.x), Math.max(mousePos.y, mouseDownRealPos.y));
 				

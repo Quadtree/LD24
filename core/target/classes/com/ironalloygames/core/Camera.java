@@ -92,16 +92,18 @@ public class Camera {
 		surf.drawLine(screenStart.x, screenStart.y, screenEnd.x, screenEnd.y, width*zoom*PlayN.graphics().height());
 	}
 	
-	public void drawImage(Vec2 pos, String imageName)
+	public void drawImage(Vec2 pos, String imageName, Vec2 size)
 	{
 		Vec2 screenPos = realToScreen(pos);
+		
+		size = size.mul(zoom * PlayN.graphics().height());
 		
 		if(!images.containsKey(imageName))
 		{
 			images.put(imageName, PlayN.assets().getImage("images/" + imageName + ".png"));
 		}
 		
-		surf.drawImageCentered(images.get(imageName), screenPos.x, screenPos.y);
+		surf.drawImage(images.get(imageName), screenPos.x - size.x / 2, screenPos.y - size.y / 2, size.x, size.y);
 	}
 	
 	public void drawRectangle(Vec2 center, Vec2 size, int color)

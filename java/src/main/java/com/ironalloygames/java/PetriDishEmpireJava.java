@@ -10,7 +10,7 @@ public class PetriDishEmpireJava {
   public static void main(String[] args) {
     JavaPlatform platform = JavaPlatform.register();
     platform.assets().setPathPrefix("com/ironalloygames/resources");
-    PlayN.graphics().setSize(1200, 1200);
+    PlayN.graphics().setSize(800, 400);
     PlayN.run(new PetriDishEmpire());
   }
 }

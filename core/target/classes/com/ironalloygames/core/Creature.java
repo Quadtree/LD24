@@ -94,6 +94,11 @@ public class Creature extends Entity{
 	{
 		Camera cam = PetriDishEmpire.s.cam;
 		
+		if(!playerOwned)
+			cam.drawImage(body.getPosition(), "red-dot", new Vec2(radius*2,radius*2));
+		else
+			cam.drawImage(body.getPosition(), "blue-dot", new Vec2(radius*2,radius*2));
+		
 		if(body.getPosition().x < cam.upperLeftBound.x - radius ||
 		   body.getPosition().y < cam.upperLeftBound.y - radius ||
 		   body.getPosition().x > cam.lowerRightBound.x + radius ||
@@ -106,9 +111,6 @@ public class Creature extends Entity{
 		{
 			p.render(cam, this);
 		}
-		
-		if(!playerOwned)
-			cam.drawImage(body.getPosition(), "red-dot");
 		
 		if(mouseHover) renderBoundingBox(Color.argb(64, 255, 255, 255));
 		
@@ -230,7 +232,7 @@ public class Creature extends Entity{
 			body.setLinearVelocity(body.getLinearVelocity().mul(DAMPENING));
 			body.setAngularVelocity(body.getAngularVelocity() * DAMPENING);
 			
-			System.out.println(body.getPosition());
+			//System.out.println(body.getPosition());
 		}
 		
 		if(playerOwned)
