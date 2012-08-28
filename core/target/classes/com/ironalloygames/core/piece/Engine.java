@@ -9,4 +9,6 @@ public class Engine extends Piece {
 	public float getEnginePower() {
 		return 0.004f * getMass();
 	}
+	
+	public float getCostMod(){ return 2f; }
 }

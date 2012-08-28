@@ -99,12 +99,21 @@ public class Creature extends Entity{
 				
 				float dist = c.body.getPosition().sub(body.getPosition()).length();
 				
-				if(dist < c.radius + radius + 2.f)
+				float padding = 2;
+				if(c.playerOwned != this.playerOwned)
+					padding = 20;
+				
+				if(dist < c.radius + radius + padding)
 				{
 					Vec2 delta = body.getPosition().sub(c.body.getPosition());
 					delta.normalize();
+					
+					// consider the degenerate case
 					if(delta.length() < 0.5f)
-						delta.x = 1;
+					{
+						delta.x = PetriDishEmpire.s.rand.nextFloat() - 0.5f;
+						delta.y = PetriDishEmpire.s.rand.nextFloat() - 0.5f;
+					}
 					delta.mulLocal(moves);
 					body.setTransform(body.getPosition().add(delta), body.getAngle());
 					moved = true;
@@ -263,13 +272,10 @@ public class Creature extends Entity{
 			//System.out.println(body.getPosition());
 		}
 		
-		if(PetriDishEmpire.s.lastFrameTotalBiomass < 1700)
-		{
-			if(playerOwned)
-				PetriDishEmpire.s.playerMoney += this.solarRate;
-			else
-				PetriDishEmpire.s.enemyMoney += this.solarRate;
-		}
+		if(playerOwned)
+			PetriDishEmpire.s.playerMoney += this.solarRate * SolarCell.getSolarCellEffectiveness();
+		else
+			PetriDishEmpire.s.enemyMoney += this.solarRate * SolarCell.getSolarCellEffectiveness();
 	}
 	
 	void renderBoundingBox(int color)

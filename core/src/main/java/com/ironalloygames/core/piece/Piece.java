@@ -137,7 +137,7 @@ public class Piece {
 		{
 			emitSparks((int)(getMass()*0.6f), getColor());
 			
-			food += getMass();
+			food += getMass() * getCostMod();
 			
 			for(Piece p : childPieces)
 			{

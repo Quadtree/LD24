@@ -25,7 +25,7 @@ public class Weapon extends Piece {
 		{
 			if(owner.playerOwned == false || p.owner.playerOwned == false)
 			{
-				float food = p.takeDamage(damage) / 2;
+				float food = p.takeDamage(damage) / 3;
 				
 				if(owner.playerOwned)
 					PetriDishEmpire.s.playerMoney += food;
@@ -46,5 +46,5 @@ public class Weapon extends Piece {
 		}
 	}
 	
-	public float getCostMod(){ return 2; }
+	public float getCostMod(){ return 3.6f; }
 }

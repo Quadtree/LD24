@@ -19,6 +19,7 @@ import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 
 import com.ironalloygames.core.piece.Piece;
+import com.ironalloygames.core.piece.SolarCell;
 
 import playn.core.CanvasImage;
 import playn.core.Color;
@@ -46,7 +47,7 @@ import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
-	private static final float DISH_HALFSIZE = 450;
+	private static final float dishHalfsize = 450;
 	private static final float MINIMAP_SIZE = 320;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
@@ -191,7 +192,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 					
 					Vec2 pos = new Vec2(c.body.getPosition());
 					pos.y = -pos.y;
-					pos.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
+					pos.mulLocal(MINIMAP_SIZE / dishHalfsize / 2);
 					pos.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 					
 					//System.out.println(pos);
@@ -205,12 +206,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				Vec2 ulb = new Vec2(cam.upperLeftBound);
 				ulb.y = -ulb.y;
-				ulb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
+				ulb.mulLocal(MINIMAP_SIZE / dishHalfsize / 2);
 				ulb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 				
 				Vec2 lrb = new Vec2(cam.lowerRightBound);
 				lrb.y = -lrb.y;
-				lrb.mulLocal(MINIMAP_SIZE / DISH_HALFSIZE / 2);
+				lrb.mulLocal(MINIMAP_SIZE / dishHalfsize / 2);
 				lrb.addLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
 				
 				surface.setFillColor(0xFFFFFFFF);
@@ -288,8 +289,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		for(float angle=0;angle<MathUtils.TWOPI;angle += (MathUtils.TWOPI / WALL_SECTIONS))
 		{
-			Vec2 sectionStart = new Vec2(MathUtils.cos(angle) * DISH_HALFSIZE, MathUtils.sin(angle) * DISH_HALFSIZE);
-			Vec2 sectionEnd = new Vec2(MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE, MathUtils.sin(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * DISH_HALFSIZE);
+			Vec2 sectionStart = new Vec2(MathUtils.cos(angle) * dishHalfsize, MathUtils.sin(angle) * dishHalfsize);
+			Vec2 sectionEnd = new Vec2(MathUtils.cos(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * dishHalfsize, MathUtils.sin(angle - (MathUtils.TWOPI / WALL_SECTIONS)) * dishHalfsize);
 			Vec2 center = sectionStart.add(sectionEnd).mul(0.5f);
 			
 			PolygonShape polygon = new PolygonShape();
@@ -345,7 +346,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	public Vec2 makeRandomEnemyPos()
 	{
 		float bearing = rand.nextFloat() * MathUtils.TWOPI;
-		float dist = rand.nextFloat() * DISH_HALFSIZE;
+		float dist = rand.nextFloat() * dishHalfsize;
 		
 		return new Vec2(MathUtils.cos(bearing) * dist, MathUtils.sin(bearing) * dist);
 	}
@@ -481,10 +482,13 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
 			statsDisplay.canvas().drawText("" + (int)enemyBiomass, 150, 60);
 			
+			statsDisplay.canvas().setFillColor(Color.rgb((int)(1 - SolarCell.getSolarCellEffectiveness())*255, (int)(SolarCell.getSolarCellEffectiveness()*255), 0));
+			statsDisplay.canvas().drawText("Solar Cell Efficency: " + (int)(SolarCell.getSolarCellEffectiveness()*100) + "%", 20, 80);
+			
 			if(victoryScreen != null)
 			{
 				statsDisplay.canvas().setFillColor(Color.rgb(255, 255, 255));
-				statsDisplay.canvas().drawText("VICTORY!!!", 20, 80);
+				statsDisplay.canvas().drawText("VICTORY!!!", 20, 100);
 			}
 			
 			/*statsDisplay.canvas().setFillColor(Color.rgb(255, 128, 0));
@@ -543,7 +547,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			Vec2 pos = new Vec2(mouseScreenPos.sub(new Vec2(graphics().width() - 40 - MINIMAP_SIZE, 40)));
 			
 			pos.subLocal(new Vec2(MINIMAP_SIZE / 2, MINIMAP_SIZE / 2));
-			pos.mulLocal(1.f / (MINIMAP_SIZE / DISH_HALFSIZE / 2));
+			pos.mulLocal(1.f / (MINIMAP_SIZE / dishHalfsize / 2));
 			pos.y = -pos.y;
 			
 			cam.setCamera(pos, 5);
@@ -692,7 +696,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		{
 			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
 			
-			if(mousePos.length() < DISH_HALFSIZE - 20)
+			if(mousePos.length() < dishHalfsize - 20)
 			{
 				ArrayList<Genome> genomes = new ArrayList<Genome>();
 				
