@@ -736,6 +736,24 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			if(agg) AudioSystem.play("agg");
 		}
 		
+		if(event.key() == Key.R)
+		{
+			for(Creature c : getCreatures())
+			{
+				if(c.selected)
+				{
+					for(Piece p : c.pieces)
+					{
+						playerMoney += p.getMass() * p.getCostMod() * 0.6f;
+					}
+					for(Piece p : c.pieces)
+					{
+						p.takeDamage(100000);
+					}
+				}
+			}
+		}
+		
 		if(event.key() == Key.SHIFT) shiftKeyDown = true;
 		
 		if(event.key() == Key.Y)

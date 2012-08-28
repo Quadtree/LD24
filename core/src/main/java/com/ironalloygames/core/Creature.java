@@ -103,6 +103,8 @@ public class Creature extends Entity{
 				{
 					Vec2 delta = body.getPosition().sub(c.body.getPosition());
 					delta.normalize();
+					if(delta.length() < 0.5f)
+						delta.x = 1;
 					delta.mulLocal(moves);
 					body.setTransform(body.getPosition().add(delta), body.getAngle());
 					moved = true;
