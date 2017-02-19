@@ -16,6 +16,6 @@ public class SolarCell extends Piece {
 	
 	public static float getSolarCellEffectiveness()
 	{
-		return 1 - PetriDishEmpire.s.lastFrameTotalBiomass / 2200;
+		return 1 - PetriDishEmpire.s.lastFrameTotalBiomass / (2200 * PetriDishEmpire.getDishAreaModifier());
 	}
 }

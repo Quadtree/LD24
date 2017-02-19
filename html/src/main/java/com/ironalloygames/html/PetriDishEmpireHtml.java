@@ -25,6 +25,8 @@ public class PetriDishEmpireHtml extends HtmlGame {
     if(paramMap.containsKey("w")) width = Integer.parseInt(paramMap.get("w").get(0));
     if(paramMap.containsKey("h")) height = Integer.parseInt(paramMap.get("h").get(0));
     
+    if(paramMap.containsKey("s")) PetriDishEmpire.dishHalfsize = Integer.parseInt(paramMap.get("s").get(0));
+    
     PlayN.graphics().setSize(width, height);
     PlayN.run(new PetriDishEmpire());
   }

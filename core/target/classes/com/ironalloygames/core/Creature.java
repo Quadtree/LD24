@@ -41,9 +41,11 @@ public class Creature extends Entity{
 	
 	boolean woken = false;
 	
+	boolean geneStealTarget = false;
+	
 	int spinDir = 1;
 	
-	public Creature(Vec2 pos, Genome genome, boolean playerOwned)
+	public Creature(Vec2 pos, Genome genome, boolean playerOwned, float costMultiplier)
 	{
 		super(pos);
 		
@@ -71,9 +73,9 @@ public class Creature extends Entity{
 			p.hp = p.getMass();
 			
 			if(playerOwned)
-				PetriDishEmpire.s.playerMoney -= p.getCostMod() * p.getMass();
+				PetriDishEmpire.s.playerMoney -= p.getCostMod() * p.getMass() * costMultiplier;
 			else
-				PetriDishEmpire.s.enemyMoney -= p.getCostMod() * p.getMass();
+				PetriDishEmpire.s.enemyMoney -= p.getCostMod() * p.getMass() * costMultiplier;
 		}
 		
 		moveTarget = new Vec2(pos);
@@ -151,14 +153,17 @@ public class Creature extends Entity{
 		
 		if(mouseHover) renderBoundingBox(Color.argb(64, 255, 255, 255));
 		
-		if(selected)
+		if(selected || geneStealTarget)
 		{
 			int color;
 			
-			if(!aggressiveMode)
-				color = Color.rgb(255, 255, 255);
+			if(geneStealTarget)
+				color = Color.rgb(255, 0, 255);
 			else
-				color = Color.rgb(255, 0, 0);
+				if(!aggressiveMode)
+					color = Color.rgb(255, 255, 255);
+				else
+					color = Color.rgb(255, 0, 0);
 			
 			Vec2 ul = body.getPosition().add(new Vec2(-radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));
 			Vec2 ur = body.getPosition().add(new Vec2(radius*BOUNDING_BOX_MUL, radius*BOUNDING_BOX_MUL));

@@ -47,12 +47,17 @@ import playn.core.util.Callback;
 
 public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.Listener, ContactListener {
 	
-	private static final float dishHalfsize = 450;
+	public static float dishHalfsize = 450;
 	private static final float MINIMAP_SIZE = 320;
 	private static final float KEY_CAMERA_MOVE_SPEED = 2;
 	private static final float MOUSE_CAMERA_MOVE_SPEED = 1.f / 20.f;
 	
 	private static final int WALL_SECTIONS = 64;
+	
+	public static float getDishAreaModifier()
+	{
+		return (dishHalfsize*dishHalfsize) / (450.f*450.f);
+	}
 	
 	public Camera cam;
 	public World world;
@@ -75,8 +80,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	
 	public ArrayList<Entity> entityAddQueue = new ArrayList<Entity>();
 	
-	public float playerMoney = 450;
-	public float enemyMoney = 600;
+	public float playerMoney = 450 * getDishAreaModifier();
+	public float enemyMoney = 600 * getDishAreaModifier();
 	
 	public CanvasImage statsDisplay;
 	
@@ -274,7 +279,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		while(enemyMoney > 0)
 		{
-			entities.add(new Creature(makeRandomEnemyPos(), new Genome(), false));
+			entities.add(new Creature(makeRandomEnemyPos(), new Genome(), false, 1));
 		}
 		
 		PlayN.mouse().setListener(this);
@@ -318,7 +323,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 		
 		music = assets().getSound("sound/music0");
 		music.setLooping(true);
-		//music.setVolume(0.85f);
+		
 	}
 	
 	public List<Creature> getCreatures()
@@ -343,6 +348,8 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 	float enemyBiomass = 0;
 	float alliedBiomass = 0;
 	
+	public DisplayCallback callback;
+	
 	public Vec2 makeRandomEnemyPos()
 	{
 		float bearing = rand.nextFloat() * MathUtils.TWOPI;
@@ -353,6 +360,12 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 	@Override
 	public void update(float delta) {
+		
+		if(callback != null)
+		{
+			callback.call();
+			callback = null;
+		}
 		
 		closeCooldown--;
 		
@@ -445,7 +458,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 				
 				for(Creature c : creatures)
 				{
-					if(!c.playerOwned && rand.nextInt(++n) == 0)
+					if((!c.playerOwned || rand.nextInt(6) == 0) && rand.nextInt(++n) == 0)
 						nextGenome = c.genome;
 				}
 				
@@ -454,7 +467,7 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 			
 			if(genomes.size() == 0) genomes.add(new Genome());
 			
-			entities.add(new Creature(makeRandomEnemyPos(), new Genome(genomes), false));
+			entities.add(new Creature(makeRandomEnemyPos(), new Genome(genomes), false, 1));
 		}
 		
 		
@@ -692,30 +705,57 @@ public class PetriDishEmpire implements Game, Listener, playn.core.Keyboard.List
 
 	@Override
 	public void onKeyDown(Event event) {
+		Vec2 mousePos = cam.screenToReal(mouseScreenPos);
+		
 		if(event.key() == Key.B && playerMoney > 0)
 		{
-			Vec2 mousePos = cam.screenToReal(mouseScreenPos);
-			
 			if(mousePos.length() < dishHalfsize - 20)
 			{
 				ArrayList<Genome> genomes = new ArrayList<Genome>();
 				
+				float costMultiplier = 1;
+				
 				for(Creature c : getCreatures())
 				{
-					if(c.selected) genomes.add(c.genome);
+					if(c.selected || c.geneStealTarget) genomes.add(c.genome);
+					if(c.geneStealTarget) costMultiplier = 3;
+					c.geneStealTarget = false;
 				}
 				
 				if(genomes.size() == 0) genomes.add(new Genome());
 				
 				Genome genome = new Genome(genomes);
 				
-				
-				
-				Creature crt = new Creature(mousePos, genome, true);
+				Creature crt = new Creature(mousePos, genome, true, costMultiplier);
 				
 				entities.add(crt);
 				
 				AudioSystem.play("split");
+			}
+		}
+		
+		if(event.key() == Key.V)
+		{
+			float bestDist = Float.MAX_VALUE;
+			Creature bestSelectTarget = null;
+			
+			for(Creature c : getCreatures())
+			{
+				c.geneStealTarget = false;
+				if(c.isInBoundingBox(mousePos) && !c.playerOwned)
+				{
+					float dist = c.body.getPosition().sub(mousePos).lengthSquared();
+					if(dist < bestDist)
+					{
+						 bestSelectTarget = c;
+						 bestDist = dist;
+					}
+				}
+			}
+			
+			if(bestSelectTarget != null)
+			{
+				bestSelectTarget.geneStealTarget = true;
 			}
 		}
 		
